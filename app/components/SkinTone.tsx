@@ -1,7 +1,7 @@
 import React from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { FaCheck } from "react-icons/fa";
-import ButtonBox from "./buttonBox";
+import ButtonBox from "./ButtonBox";
 import ContainerBox from "./ContainerBox";
 
 interface skinToneType {

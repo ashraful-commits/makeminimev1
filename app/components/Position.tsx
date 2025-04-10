@@ -8,7 +8,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import { FaRotateLeft, FaRotateRight } from "react-icons/fa6";
-import ButtonBox from "./buttonBox";
+import ButtonBox from "./ButtonBox";
 import ContainerBox from "./ContainerBox";
 
 const Position = ({ setStep, setTransform }) => {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { AiOutlineCheck } from "react-icons/ai"; // Icon for the Confirm button
 import ContainerBox from "./ContainerBox";
-import ButtonBox from "./buttonBox";
+import ButtonBox from "./ButtonBox";
 interface imgePreviewType {
   croppedImage: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;

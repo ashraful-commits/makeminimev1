@@ -3,7 +3,7 @@ import { Cropper, CropperRef } from "react-advanced-cropper";
 import "react-advanced-cropper/dist/style.css";
 import { FaRedo, FaCrop } from "react-icons/fa";
 import ContainerBox from "./ContainerBox";
-import ButtonBox from "./buttonBox";
+import ButtonBox from "./ButtonBox";
 
 interface ImageCropperProps {
   src: string;
