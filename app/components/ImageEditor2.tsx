@@ -646,7 +646,7 @@ const ImageEditor = ({
       {/* Controls */}
       {step === 7 && (
         <>
-          <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end right-4 max-sm:-mb-[100px]">
+          <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end max-sm:-mb-[100px]">
             <div className="flex gap-4 mb-2 ">
               <button
                 onClick={() => handleAddToCart(productId, faceImage)}
