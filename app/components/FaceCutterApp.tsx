@@ -153,7 +153,7 @@ const FaceCutterApp = ({ faceImage, setStep, setCropedImage, step }) => {
           <div className="absolute bottom-0 left-0 w-10 h-10 border-b-[6px] border-l-[6px] border-blue-500"></div>
           <div className="absolute bottom-0 right-0 w-10 h-10 border-b-[6px] border-r-[6px] border-blue-500"></div>
           {removeLoader && (
-            <div className="absolute bottom-0 left-0 w-full h-7 animate-slide bg-red-800"></div>
+            <div className="absolute bottom-0 left-0 w-full h-7 animate-slide bg-red-800 bg-opacity-50"></div>
           )}
           <img
             src={faceImage}
