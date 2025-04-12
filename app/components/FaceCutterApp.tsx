@@ -181,7 +181,7 @@ const FaceCutterApp = ({ faceImage, setStep, setCropedImage, step }) => {
             {removeLoader ? (
               <AiOutlineLoading3Quarters className="animate-spin" />
             ):<LiaCutSolid />}
-            {removeLoader ? "Wait less than 1 min" : "Cutout face"}
+            {removeLoader ? "Wait less than 1 min" : "Confirm"}
           </button>
         )}
       </div>

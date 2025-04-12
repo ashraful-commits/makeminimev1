@@ -89,7 +89,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
           onClick={handleChangePhoto}
           className="px-2 py-3 w-full max-sm:truncate bg-blue-600 text-blue-100 hover:text-white text-sm rounded hover:bg-blue-800 flex justify-center items-center gap-2"
         >
-          Change Photo
+          Change image
         </button>
         <button
           onClick={resetCropper}
@@ -101,7 +101,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
           onClick={handleCrop}
           className="px-20 max-sm:px-8 py-3 bg-blue-500 text-white text-sm rounded hover:bg-blue-800 gap-2 w-full max-sm:gap-1"
         >
-          Crop face
+          Confirm
         </button>
       </ButtonBox>
     </div>

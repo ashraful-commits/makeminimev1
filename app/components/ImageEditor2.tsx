@@ -155,8 +155,8 @@ const ImageEditor = ({
     },
     [getContainerBounds, step, transform, setTransform]
   );
-
-  // Smooth movement handler using requestAnimationFrame
+  const previousAngle = useRef(transform.rotation); // Ref to store previous rotation angle
+  const previousMousePosition = useRef({ x: 0, y: 0 }); // Ref to track the last mouse position
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
       if (!isDragging || !containerRef.current) return;
@@ -191,17 +191,41 @@ const ImageEditor = ({
           case "rotate": {
             const centerX = transform.x + transform.width / 2;
             const centerY = transform.y + transform.height / 2;
-            const angle =
-              Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
-            setTransform((prev) => ({
-              ...prev,
-              rotation: (angle + 360) % 360,
-            }));
+          
+            // Calculate the new angle based on the current mouse position
+            const newAngle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
+          
+            // Calculate the difference from the previous angle considering full rotation
+            let degreesDiff = newAngle - previousAngle.current;
+          
+            // Normalize the angle to the range of 0 to 360
+            if (degreesDiff < -180) degreesDiff += 360;
+            if (degreesDiff > 180) degreesDiff -= 360;
+          
+            // Apply rotation only if the threshold is crossed (optional: 2 degrees)
+            if (Math.abs(degreesDiff) >= 2) {
+              // Update the transform's rotation with the new angle
+              const newRotation = (previousAngle.current + degreesDiff) % 360; // Ensure it wraps around
+          
+              // Update the transform state
+              setTransform((prev) => ({
+                ...prev,
+                rotation: newRotation < 0 ? newRotation + 360 : newRotation, // Ensure positive angle
+              }));
+          
+              // Update previous angle for the next calculation
+              previousAngle.current = newRotation;
+            }
+            break;
+          }
+          // Handle cases for move and resize if necessary...
+          default: {
+            // Handle other actions (move, resize)...
             break;
           }
         }
       };
-
+  
       requestAnimationFrame(updateTransform);
     },
     [
@@ -213,6 +237,7 @@ const ImageEditor = ({
       getContainerBounds,
       transform.height,
       transform.width,
+      setTransform
     ]
   );
 
@@ -259,7 +284,7 @@ const ImageEditor = ({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [getContainerBounds]);
+  }, [getContainerBounds,setTransform,step]);
 
   const handleAddToCart = async (id: string, faceImage: string) => {
     if (!containerRef.current || !faceImage) {
@@ -322,7 +347,16 @@ const ImageEditor = ({
   const dynamicY = transform.y;
   return (
     <div
-      className={` ${step === 4 &&"max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"} ${ step === 8 &&"max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"} ${step === 7 &&"max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"} flex-col border-r border-r-gray-500 max-sm:border-r-0 items-center justify-center w-[50%] max-sm:w-full max-sm:border-b z-0 lg:min-h-[80vh] max-sm:min-h-[450px]  md:min-h-[80vh] ${
+      className={` ${
+        step === 4 &&
+        "max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
+      } ${
+        step === 8 &&
+        "max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
+      } ${
+        step === 7 &&
+        "max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
+      } flex-col border-r border-r-gray-500 max-sm:border-r-0 items-center justify-center w-[50%] max-sm:w-full max-sm:border-b z-0 lg:min-h-[80vh] max-sm:min-h-[450px]  md:min-h-[80vh] ${
         step === 0 || step === 4 || step === 7 || step === 8
           ? "flex"
           : "max-sm:hidden"
@@ -518,23 +552,27 @@ const ImageEditor = ({
                         cursor: "grab",
                         borderRadius: "50%",
                         touchAction: "none",
-                        transform: `rotate(${-transform.rotation}deg)`,
                         transition: "background-color 0.2s, transform 0.3s",
+                        zIndex: 100, // Ensure it's on top
                       }}
-                      className="flex items-center justify-center "
+                      className="flex items-center justify-center"
                       onMouseDown={(e) => {
-                        e.stopPropagation(),
-                          handleStart("rotate", e.clientX, e.clientY);
+                        e.stopPropagation();
+                        handleStart("rotate", e.clientX, e.clientY);
                       }}
-                      onTouchStart={(e) =>
-                        handleStart(
-                          "rotate",
-                          e.touches[0].clientX,
-                          e.touches[0].clientY
-                        )
-                      }
+                      onTouchStart={(e) => {
+                        e.stopPropagation();
+                        if (step === 4) {
+                          handleStart(
+                            "rotate",
+                            e.touches[0].clientX,
+                            e.touches[0].clientY
+                          );
+                        }
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
                           handleStart("rotate", e.clientX, e.clientY);
                         }
                       }} // Add support for keyboard input
@@ -634,18 +672,20 @@ const ImageEditor = ({
       {/* Controls */}
       {step === 7 && (
         <>
-          <div className="flex gap-4  fixed  right-20 bottom-2 max-sm:-mb-[100px] z-500   ">
-            <button
-              onClick={() => handleAddToCart(productId, faceImage)}
-              className="bg-green-600 text-white px-6 py-3 flex justify-center items-center rounded-md text-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              {loading ? (
-                <AiOutlineLoading3Quarters className="animate-spin inline-block mr-2" />
-              ) : (
-                <FaCartPlus className="inline-block mr-2" />
-              )}
-              Add to Basket
-            </button>
+          <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end right-4 max-sm:-mb-[400px]">
+            <div className="flex gap-4 mb-2 ">
+              <button
+                onClick={() => handleAddToCart(productId, faceImage)}
+                className="bg-green-600 text-white px-6 py-3 flex justify-center items-center rounded-md text-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                {loading ? (
+                  <AiOutlineLoading3Quarters className="animate-spin inline-block mr-2" />
+                ) : (
+                  <FaCartPlus className="inline-block mr-2" />
+                )}
+                Add to Basket
+              </button>
+            </div>
           </div>
         </>
       )}
