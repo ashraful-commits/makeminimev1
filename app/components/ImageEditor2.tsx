@@ -189,20 +189,23 @@ const ImageEditor = ({
           }
 
           case "rotate": {
-            const centerX = transform.x + transform.width / 2;
-            const deltaX = x - centerX;
-          
-            setTransform((prev) => {
-              const newRotation = (prev.rotation + (deltaX >= 0 ? 2 : -2) + 360) % 360;
-              return {
-                ...prev,
-                rotation: newRotation,
-              };
-            });
+            const centerX = startValues.current.x + startValues.current.width / 2;
+            const centerY = startValues.current.y + startValues.current.height / 2;
+  
+            const radians = Math.atan2(y - centerY, x - centerX);
+            const degrees = (radians * 180) / Math.PI;
+  
+            const newRotation = degrees;
+  
+            setTransform((prev) => ({
+              ...prev,
+              rotation: newRotation,
+            }));
             break;
           }
           
-          
+           default:
+            break;
           
         }
       };
