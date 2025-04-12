@@ -189,13 +189,21 @@ const ImageEditor = ({
           }
 
           case "rotate": {
-
-            setTransform((prev) => ({
-              ...prev,
-              rotation:prev.rotation + 0.5,
-            }));
+            const centerX = transform.x + transform.width / 2;
+            const deltaX = x - centerX;
+          
+            setTransform((prev) => {
+              const newRotation = (prev.rotation + (deltaX >= 0 ? 2 : -2) + 360) % 360;
+              return {
+                ...prev,
+                rotation: newRotation,
+              };
+            });
             break;
           }
+          
+          
+          
         }
       };
 
