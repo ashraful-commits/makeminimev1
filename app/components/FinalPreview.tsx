@@ -23,25 +23,29 @@ const FinalPreview: React.FC<FinalPreviewProps> = ({
   };
   return (
     <div
-      className={`w-[50%]  max-sm:w-full flex justify-between  gap-3 flex-col  min-h-[90vh]   px-2  `}
+      className={`w-[50%]  max-sm:w-full flex justify-between  gap-3 flex-col  min-h-[90vh] max-h-[90vh]   px-2  `}
     >
       <ContainerBox>
-        <div className="grid grid-cols-3 max-sm:mt-5 gap-3 justify-center items-center max-w-lg max-sm:w-full">
+        <div className="flex max-sm:mt-5 gap-3 justify-center items-center max-w-lg max-sm:w-full">
           {croppedImage && (
-            <div className="flex justify-start max-sm:justify-center items-center gap-3 max-sm:flex-col max-sm:gap-1">
+            <div className="flex justify-start max-sm:justify-center items-center gap-3  max-sm:gap-1">
               <p className="text-blue-500 text-lg max-sm:text-sm text-start max-sm:mt-3">
                 Face
               </p>
-              <button
-                className="cursor-pointer hover:outline-1 w-20 h-auto max-sm:w-10 max-sm:h-10"
+
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={handleEdit}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleEdit();
+                  }
+                }}
+                className="p-1 w-auto h-20 max-sm:h-14"
               >
-                <img
-                  className="w-20 h-auto max-sm:w-10 max-sm:h-10"
-                  src={croppedImage}
-                  alt="Cropped face"
-                />
-              </button>
+                <img src={croppedImage} className="h-full w-auto object-contain" alt="Cropped face" />
+              </div>
             </div>
           )}
           <div className="flex justify-start max-sm:justify-center items-center gap-3 max-sm:flex-col max-sm:gap-1">
@@ -49,7 +53,7 @@ const FinalPreview: React.FC<FinalPreviewProps> = ({
               Skin Tone
             </p>
             <div
-              className="w-10 h-10 bg-black rounded-full"
+              className="w-5 h-5 bg-black rounded-full"
               style={{ filter: skinTone }}
             ></div>
           </div>

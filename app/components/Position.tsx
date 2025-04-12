@@ -78,11 +78,11 @@ const Position = ({ setStep, setTransform }) => {
     setStep(3);
   };
   return (
-    <div className="controls  max-sm:w-full w-[50%] flex flex-col justify-between min-h-[87vh] items-center">
-      <h1 className="text-bule-500 text-lg font-bold my-5 text-center text-blue-500">
+    <div className="controls  max-sm:w-full w-[50%] flex flex-col justify-between min-h-[90vh]  max-h-[90vh]  items-center">
+      <h1 className="text-bule-500 text-lg font-bold mt-3 text-center text-blue-500">
         Position Face
       </h1>
-      <ContainerBox>
+      <ContainerBox className={"max-sm:hidden"}>
         <h2 className="text-center max-sm:my-5 my-10 text-lg max-sm:text-sm font-bold w-full max-sm:hidden">
           Useing the tools below position the face on the items correctly
         </h2>

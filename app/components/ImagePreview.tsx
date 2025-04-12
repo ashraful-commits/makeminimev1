@@ -69,7 +69,7 @@ function ImagePreview({
 
   return (
     <div
-      className={`flex w-[50%] max-sm:w-full flex-col items-center justify-between px-2 min-h-[85vh]`}
+      className={`flex w-[50%] max-sm:w-full flex-col items-center justify-between px-2 min-h-[85vh]  max-h-[85vh] `}
     >
       <h1 className="text-blue-500 text-xl font-bold mt-3">Edit Brightness</h1>
       <ContainerBox>

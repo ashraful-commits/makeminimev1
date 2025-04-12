@@ -131,7 +131,7 @@ const FaceCutterApp = ({ faceImage, setStep, setCropedImage, step }) => {
 
   return (
     <div
-      className={`w-[50%]   max-sm:w-full flex space-y-10  min-h-[85vh]  flex-col items-center justify-between border-gray-300 lg:border-r md:border-r max-sm:border-none px-2 bg-white max-sm:space-y-6   rounded-lg relative ${
+      className={`w-[50%]   max-sm:w-full flex space-y-10  min-h-[85vh] max-h-[85vh]  flex-col items-center justify-between border-gray-300 lg:border-r md:border-r max-sm:border-none px-2 bg-white max-sm:space-y-6   rounded-lg relative ${
         step !== 7 ? "" : ""
       }`}
     >
