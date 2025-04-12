@@ -154,7 +154,7 @@ const Position = ({ setStep, setTransform }) => {
         </div>
       </ContainerBox>
       <div className="flex flex-col justify-center items-center w-full">
-        <div className=" gap-10 justify-center items-center max-sm:gap-1 hidden max-sm:flex max-sm:justify-center">
+        <div className=" gap-10 justify-center items-center max-sm:gap-1 hidden max-sm:flex max-sm:justify-center max-sm:mb-2">
           <div className="flex flex-col justify-center items-center gap-y-3 max-sm:gap-y-1 order-2">
             <span className="text-blue-500 max-sm:text-sm">Rotate</span>
             <div className="flex gap-2 justify-center items-center">
