@@ -155,7 +155,7 @@ const Position = ({ setStep, setTransform }) => {
       </ContainerBox>
       <div className="flex flex-col justify-center items-center w-full">
         <div className=" gap-10 justify-center items-center max-sm:gap-1 hidden max-sm:flex max-sm:justify-center">
-          <div className="flex flex-col justify-center items-center gap-y-3 order-2">
+          <div className="flex flex-col justify-center items-center gap-y-3 max-sm:gap-y-1 order-2">
             <span className="text-blue-500 max-sm:text-sm">Rotate</span>
             <div className="flex gap-2 justify-center items-center">
               <button
@@ -172,7 +172,7 @@ const Position = ({ setStep, setTransform }) => {
               </button>
             </div>
           </div>
-          <div className="flex flex-col justify-center items-center gap-y-3 order-1  max-sm:col-span-1">
+          <div className="flex flex-col justify-center items-center gap-y-3 order-1  max-sm:col-span-1 max-sm:gap-y-1">
             <span className="text-blue-500 max-sm:text-sm">Position</span>
             <div className="flex gap-1 justify-center items-center">
               <button
@@ -202,7 +202,7 @@ const Position = ({ setStep, setTransform }) => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-center items-center gap-y-3 order-3">
+          <div className="flex flex-col justify-center items-center gap-y-3 order-3  max-sm:gap-y-1">
             <span className="text-blue-500 max-sm:text-sm">Zoom</span>
             <div className="flex">
               <button
