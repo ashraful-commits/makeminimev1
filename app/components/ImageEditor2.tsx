@@ -155,8 +155,8 @@ const ImageEditor = ({
     },
     [getContainerBounds, step, transform, setTransform]
   );
-  const previousAngle = useRef(transform.rotation); // Ref to store previous rotation angle
-  const previousMousePosition = useRef({ x: 0, y: 0 }); // Ref to track the last mouse position
+
+  // Smooth movement handler using requestAnimationFrame
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
       if (!isDragging || !containerRef.current) return;
@@ -189,43 +189,16 @@ const ImageEditor = ({
           }
 
           case "rotate": {
-            const centerX = transform.x + transform.width / 2;
-            const centerY = transform.y + transform.height / 2;
-          
-            // Calculate the new angle based on the current mouse position
-            const newAngle = Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
-          
-            // Calculate the difference from the previous angle considering full rotation
-            let degreesDiff = newAngle - previousAngle.current;
-          
-            // Normalize the angle to the range of 0 to 360
-            if (degreesDiff < -180) degreesDiff += 360;
-            if (degreesDiff > 180) degreesDiff -= 360;
-          
-            // Apply rotation only if the threshold is crossed (optional: 2 degrees)
-            if (Math.abs(degreesDiff) >= 2) {
-              // Update the transform's rotation with the new angle
-              const newRotation = (previousAngle.current + degreesDiff) % 360; // Ensure it wraps around
-          
-              // Update the transform state
-              setTransform((prev) => ({
-                ...prev,
-                rotation: newRotation < 0 ? newRotation + 360 : newRotation, // Ensure positive angle
-              }));
-          
-              // Update previous angle for the next calculation
-              previousAngle.current = newRotation;
-            }
-            break;
-          }
-          // Handle cases for move and resize if necessary...
-          default: {
-            // Handle other actions (move, resize)...
+
+            setTransform((prev) => ({
+              ...prev,
+              rotation:prev.rotation + 2,
+            }));
             break;
           }
         }
       };
-  
+
       requestAnimationFrame(updateTransform);
     },
     [
