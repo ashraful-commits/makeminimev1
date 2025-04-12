@@ -338,7 +338,7 @@ const ImageEditor = ({
       <div className="relative w-full flex justify-center items-center  bg-center bg-no-repeat lg:min-h-[90vh] max-sm:min-h-[50vh] md:min-h-[80vh] max-sm:h-[35vh]">
         <div
           ref={containerRef}
-          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-[.55] md:scale-50 lg:scale-100"
+          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-[.50] md:scale-50 lg:scale-100"
         >
           {/* Background Layers */}
           <canvas
@@ -645,7 +645,7 @@ const ImageEditor = ({
       {/* Controls */}
       {step === 7 && (
         <>
-          <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end right-4 max-sm:-mb-[400px]">
+          <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end right-4 max-sm:-mb-[100px]">
             <div className="flex gap-4 mb-2 ">
               <button
                 onClick={() => handleAddToCart(productId, faceImage)}

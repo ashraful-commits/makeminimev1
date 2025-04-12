@@ -63,12 +63,12 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
 
   return (
     <div
-      className={` w-[50%] h-full min-h-[90vh]  max-sm:w-full justify-between flex flex-col items-center 
+      className={` w-[50%] h-full min-h-[90vh]  max-sm:w-full justify-center gap-4 flex flex-col items-center 
        `}
     >
       <h1 className="my-5 text-blue-500 text-lg font-bold">Select Your Face</h1>
 
-      <ContainerBox >
+      <ContainerBox className={""}>
         <p className="text-gray-500 text-sm my-2 text-center">
           Before cropping, take a moment to zoom in on your face for a precise selection. This ensures a perfect fit!
         </p>
