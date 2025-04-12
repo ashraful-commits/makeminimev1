@@ -63,7 +63,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
 
   return (
     <div
-      className={` w-[50%] h-full min-h-[90vh]  max-sm:w-full justify-center gap-4 flex flex-col items-center 
+      className={` w-[50%] h-full min-h-[85vh]  max-sm:w-full justify-center gap-4 flex flex-col items-center 
        `}
     >
       <h1 className="my-5 text-blue-500 text-lg font-bold">Select Your Face</h1>
