@@ -31,7 +31,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
   };
 
   return (
-    <div className="w-[50%] max-sm:w-full flex flex-col items-center justify-between border-gray-300 lg:border-r md:border-r max-sm:border-b min-h-[90vh] p-4 bg-white rounded-lg relative">
+    <div className="w-[50%] max-sm:w-full flex flex-col items-center justify-between border-gray-300 lg:border-r md:border-r max-sm:border-b min-h-[85vh] max-h-[85vh] p-4 bg-white rounded-lg relative">
       <h2 className="text-lg font-bold text-blue-500 mb-4">
         Capture Your Photo
       </h2>
