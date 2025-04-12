@@ -83,7 +83,7 @@ function ImagePreview({
               }}
             >
               <img
-                className="object-contain w-[100%] h-full max-h-40 min-h-40  max-sm:w-full max-sm:h-full"
+                className="object-contain w-[100%] h-full max-h-40 min-h-40  max-sm:w-full max-sm:max-h-40 max-sm:min-h-40"
                 src={croppedImage}
                 alt="Cropped"
               />
