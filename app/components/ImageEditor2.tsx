@@ -189,17 +189,10 @@ const ImageEditor = ({
           }
 
           case "rotate": {
-            const centerX = startValues.current.x + startValues.current.width / 2;
-            const centerY = startValues.current.y + startValues.current.height / 2;
-  
-            const radians = Math.atan2(y - centerY, x - centerX);
-            const degrees = (radians * 360) / Math.PI;
-  
-            const newRotation = degrees;
-  
+   
             setTransform((prev) => ({
               ...prev,
-              rotation: newRotation,
+              rotation: prev.rotation +2,
             }));
             break;
           }
@@ -215,12 +208,8 @@ const ImageEditor = ({
     [
       activeHandle,
       isDragging,
-      transform.aspectRatio,
-      transform.x,
-      transform.y,
       getContainerBounds,
-      transform.height,
-      transform.width,
+      transform.aspectRatio,
       setTransform
     ]
   );
