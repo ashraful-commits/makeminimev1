@@ -193,7 +193,7 @@ const ImageEditor = ({
             const centerY = startValues.current.y + startValues.current.height / 2;
   
             const radians = Math.atan2(y - centerY, x - centerX);
-            const degrees = (radians * 180) / Math.PI;
+            const degrees = (radians * 360) / Math.PI;
   
             const newRotation = degrees;
   
