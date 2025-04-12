@@ -336,10 +336,10 @@ const ImageEditor = ({
           : "max-sm:hidden"
       }`}
     >
-      <div className="relative w-full flex justify-center items-center  bg-center bg-no-repeat lg:min-h-[90vh] max-sm:min-h-[50vh] md:min-h-[80vh] max-sm:h-[35vh]">
+      <div className="relative w-full flex justify-center items-center lg:min-h-[90vh] max-sm:min-h-[50vh] md:min-h-[80vh] max-sm:h-[35vh]">
         <div
           ref={containerRef}
-          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-[.50] md:scale-50 lg:scale-100"
+          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100"
         >
           {/* Background Layers */}
           <canvas
