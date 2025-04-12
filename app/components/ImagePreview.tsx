@@ -71,7 +71,7 @@ function ImagePreview({
     <div
       className={`flex w-[50%] max-sm:w-full flex-col items-center justify-between px-2 min-h-[85vh]`}
     >
-      <h1 className="text-blue-500 text-xl font-bold">Edit Brightness</h1>
+      <h1 className="text-blue-500 text-xl font-bold mt-3">Edit Brightness</h1>
       <ContainerBox>
         {croppedImage && (
           <>

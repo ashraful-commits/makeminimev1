@@ -135,7 +135,7 @@ const FaceCutterApp = ({ faceImage, setStep, setCropedImage, step }) => {
         step !== 7 ? "" : ""
       }`}
     >
-      <h2 className="text-xl font-semibold text-center text-blue-500 mb-6">
+      <h2 className="text-xl font-semibold mt-4 text-center text-blue-500 mb-6">
         Cutout
       </h2>
       <ContainerBox>

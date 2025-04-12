@@ -190,7 +190,7 @@ const ImageEditor = ({
 
           case "rotate": {
             // Determine rotation adjustment based on vertical movement
-            const rotationAdjustment = deltaY * 0.1; // Scale deltaY for smoother rotation
+            const rotationAdjustment = deltaY * 0.01; // Scale deltaY for smoother rotation
             setTransform((prev) => ({
                 ...prev,
                 rotation: prev.rotation + rotationAdjustment,

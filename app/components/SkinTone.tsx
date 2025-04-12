@@ -145,7 +145,7 @@ const SkinTone = ({ step, setStep, skinTone, setSkinTone }: skinToneType) => {
   return (
     <div className="max-sm:w-full  w-[50%]  mx-auto flex flex-col items-center justify-between  px-2 max-sm:px-2 min-h-[90vh] - ">
       {/* Section Title and Navigation Buttons */}
-      <h1 className="text-blue-500 text-xl text-center font-bold">
+      <h1 className="text-blue-500 text-xl mt-4 text-center font-bold">
         Choose colour
       </h1>
       <ContainerBox>

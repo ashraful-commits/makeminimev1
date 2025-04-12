@@ -73,7 +73,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
           Before cropping, take a moment to zoom in on your face for a precise selection. This ensures a perfect fit!
         </p>
 
-          <div className="w-full h-[50vh]">
+          <div className="w-full h-[50vh] max-sm:h-auto flex justify-center items-center">
           <Cropper
             autoZoom={true}
             ref={cropperRef}
