@@ -192,7 +192,7 @@ const ImageEditor = ({
 
             setTransform((prev) => ({
               ...prev,
-              rotation:prev.rotation + 2,
+              rotation:prev.rotation + 0.5,
             }));
             break;
           }
