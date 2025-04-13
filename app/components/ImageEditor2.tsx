@@ -96,60 +96,73 @@ const ImageEditor = ({
   // };
 
   // Check if CanvasRenderingContext2D.filter is supported
-const isCanvasFilterSupported = (() => {
-  try {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.filter = 'blur(1px)';
-    return ctx.filter.includes('blur');
-  } catch (e) {
-    return false;
-  }
-})();
-console.log(isCanvasFilterSupported?"true":"false")
-const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
-  const canvas = canvasRef.current;
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const image = new Image();
-  image.crossOrigin = "anonymous";
-  image.src = imageSrc;
-
-  image.onload = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Apply filter using supported method
-    if (isCanvasFilterSupported) {
-      ctx.filter = filter;
-      canvas.style.filter = "none"; 
-    } else {
-      ctx.filter = "none"; 
-      canvas.style.filter = filter; 
+  const isCanvasFilterSupported = (() => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw a red pixel
+      ctx.fillStyle = '#FF0000';
+      ctx.fillRect(0, 0, 1, 1);
+      
+      // Apply brightness filter to make it black
+      ctx.filter = 'brightness(0)';
+      ctx.fillRect(0, 0, 1, 1);
+      
+      // Check the pixel color
+      const pixel = ctx.getImageData(0, 0, 1, 1).data;
+      return pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0; // Check if black
+    } catch (e) {
+      return false;
     }
-
-    const width = canvas.width;
-    const height = canvas.height;
-
-    const targetAspect = width / height;
-    const imgAspect = image.naturalWidth / image.naturalHeight;
-
-    let drawWidth, drawHeight;
-
-    if (imgAspect > targetAspect) {
-      drawHeight = height;
-      drawWidth = height * imgAspect;
-    } else {
-      drawWidth = width;
-      drawHeight = width / imgAspect;
-    }
-
-    const offsetX = (width - drawWidth) / 2;
-    const offsetY = (height - drawHeight) / 2;
-
-    ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+  })();
+  
+  console.log(isCanvasFilterSupported ? "true" : "false");
+  
+  const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+  
+    const ctx = canvas.getContext("2d");
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = imageSrc;
+  
+    image.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+      // Apply filter using supported method
+      if (isCanvasFilterSupported) {
+        ctx.filter = filter;
+        canvas.style.filter = "none"; 
+      } else {
+        ctx.filter = "none"; 
+        canvas.style.filter = filter; 
+      }
+  
+      const width = canvas.width;
+      const height = canvas.height;
+      const targetAspect = width / height;
+      const imgAspect = image.naturalWidth / image.naturalHeight;
+  
+      let drawWidth, drawHeight;
+  
+      if (imgAspect > targetAspect) {
+        drawHeight = height;
+        drawWidth = height * imgAspect;
+      } else {
+        drawWidth = width;
+        drawHeight = width / imgAspect;
+      }
+  
+      const offsetX = (width - drawWidth) / 2;
+      const offsetY = (height - drawHeight) / 2;
+  
+      ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+    };
   };
-};
   useEffect(() => {
     drawImageOnCanvas(canvasBodyRef, defaultBodyImage);
     drawImageOnCanvas(canvasSkinToneRef, defaultSkitToneImage, defaultSkinTone);
