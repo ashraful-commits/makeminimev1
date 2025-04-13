@@ -339,7 +339,7 @@ const ImageEditor = ({
       <div className="relative w-full flex justify-center items-center lg:min-h-[90vh] max-sm:min-h-[50vh] md:min-h-[80vh] max-sm:h-[35vh]">
         <div
           ref={containerRef}
-          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100"
+          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100 overflow-hidden"
         >
           {/* Background Layers */}
           <canvas
@@ -363,7 +363,7 @@ const ImageEditor = ({
                 margin: "0 auto",
                 zIndex: 30,
               }}
-              className=" w-full scale-110"
+              className=" w-full"
             >
               {/* Main Element */}
               <div
@@ -417,7 +417,7 @@ const ImageEditor = ({
                 margin: "0 auto",
                 zIndex: 10000,
               }}
-              className=" w-full scale-110"
+              className=" w-full"
             >
               {/* Main Element */}
               <div

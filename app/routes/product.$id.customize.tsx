@@ -178,8 +178,8 @@ export default function ProductIdCustomize() {
   const [transform, setTransform] = useState({
     x: 80,
     y: 50,
-    width: 400,
-    height: 400,
+    width: 300,
+    height: 300,
     rotation: 0,
     aspectRatio: 1,
     zoom: 1,
