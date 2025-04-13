@@ -59,42 +59,97 @@ const ImageEditor = ({
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  // const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
+  //   const canvas = canvasRef.current;
+  //   if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
-    const image = new Image();
-    image.crossOrigin = "anonymous";
-    image.src = imageSrc;
+  //   const ctx = canvas.getContext("2d");
+  //   const image = new Image();
+  //   image.crossOrigin = "anonymous";
+  //   image.src = imageSrc;
 
-    image.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //   image.onload = () => {
+  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //     ctx.filter = filter;
+
+  //     const width = canvas.width;
+  //     const height = canvas.height;
+
+  //     const targetAspect = width / height;
+  //     const imgAspect = image.naturalWidth / image.naturalHeight;
+
+  //     let drawWidth, drawHeight;
+
+  //     if (imgAspect > targetAspect) {
+  //       drawHeight = height;
+  //       drawWidth = height * imgAspect;
+  //     } else {
+  //       drawWidth = width;
+  //       drawHeight = width / imgAspect;
+  //     }
+
+  //     const offsetX = (width - drawWidth) / 2;
+  //     const offsetY = (height - drawHeight) / 2;
+
+  //     ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+  //   };
+  // };
+
+  // Check if CanvasRenderingContext2D.filter is supported
+const isCanvasFilterSupported = (() => {
+  try {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.filter = 'blur(1px)';
+    return ctx.filter.includes('blur');
+  } catch (e) {
+    return false;
+  }
+})();
+
+const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const image = new Image();
+  image.crossOrigin = "anonymous";
+  image.src = imageSrc;
+
+  image.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Apply filter using supported method
+    if (isCanvasFilterSupported) {
       ctx.filter = filter;
+      canvas.style.filter = "none"; // Reset CSS filter
+    } else {
+      ctx.filter = "none"; // Ensure no context filter
+      canvas.style.filter = filter; // Use CSS filter fallback
+    }
 
-      const width = canvas.width;
-      const height = canvas.height;
+    const width = canvas.width;
+    const height = canvas.height;
 
-      const targetAspect = width / height;
-      const imgAspect = image.naturalWidth / image.naturalHeight;
+    const targetAspect = width / height;
+    const imgAspect = image.naturalWidth / image.naturalHeight;
 
-      let drawWidth, drawHeight;
+    let drawWidth, drawHeight;
 
-      if (imgAspect > targetAspect) {
-        drawHeight = height;
-        drawWidth = height * imgAspect;
-      } else {
-        drawWidth = width;
-        drawHeight = width / imgAspect;
-      }
+    if (imgAspect > targetAspect) {
+      drawHeight = height;
+      drawWidth = height * imgAspect;
+    } else {
+      drawWidth = width;
+      drawHeight = width / imgAspect;
+    }
 
-      const offsetX = (width - drawWidth) / 2;
-      const offsetY = (height - drawHeight) / 2;
+    const offsetX = (width - drawWidth) / 2;
+    const offsetY = (height - drawHeight) / 2;
 
-      ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-    };
+    ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
   };
-
+};
   useEffect(() => {
     drawImageOnCanvas(canvasBodyRef, defaultBodyImage);
     drawImageOnCanvas(canvasSkinToneRef, defaultSkitToneImage, defaultSkinTone);
@@ -273,6 +328,12 @@ const ImageEditor = ({
         useCORS: true,
         backgroundColor: "transparent",
         logging: process.env.NODE_ENV === "development",
+        scale: 2, // Improve resolution for retina displays
+        onclone: (clonedDoc) => {
+          // Ensure images are CORS-compliant in cloned document
+          const images = clonedDoc.querySelectorAll("img");
+          images.forEach(img => img.setAttribute("crossOrigin", "anonymous"));
+        }
       });
 
       //uuid
