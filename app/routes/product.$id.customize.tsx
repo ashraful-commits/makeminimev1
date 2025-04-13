@@ -219,13 +219,26 @@ export default function ProductIdCustomize() {
 
   const handleUploadPhoto = (e: any) => {
     const file = e.target.files[0];
-
     if (file) {
-      const objectURL = URL.createObjectURL(file);
-      setUploadedPhoto(objectURL);
-      setStep(1);
-      localStorage.setItem("uploadImage", objectURL);
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const base64 = e.target.result;
+        localStorage.setItem("mainImg", base64);
+        setUploadedPhoto(base64);
+        setStep(1);
+        localStorage.setItem("uploadImage", base64);
+        localStorage.setItem("mainImg", base64);
+      };
+      reader.readAsDataURL(file);
     }
+    // if (file) {
+    //   const objectURL = URL.createObjectURL(file);
+
+    //   setUploadedPhoto(objectURL);
+    //   setStep(1);
+    //   localStorage.setItem("uploadImage", objectURL);
+    //   localStorage.setItem("mainImg", objectURL);
+    // }
   };
   const handleTakePhoto = (e: any) => {
     setStep(6);
@@ -307,7 +320,9 @@ export default function ProductIdCustomize() {
         <div className="loader w-full h-screen flex gap-3 flex-col justify-center items-center">
           <img src="/images/happiness.png" alt="" />
           <p>Let's get this Started...</p>
-          <p className="font-bold text-blue-500">Personalisation Tool is Loading</p>
+          <p className="font-bold text-blue-500">
+            Personalisation Tool is Loading
+          </p>
         </div>
       ) : (
         <>
@@ -381,19 +396,15 @@ export default function ProductIdCustomize() {
               />
             )}
 
-            {uploadedPhoto && step == 1 && 
-              
-
-                  <ImageCropper
-                    src={uploadedPhoto}
-                    setUploadedPhoto={setUploadedPhoto}
-                    setCropedImage={setCropedImage}
-                    setStep={setStep}
-                    step={step}
-                  />
-                
-              
-            }
+            {uploadedPhoto && step == 1 && (
+              <ImageCropper
+                src={uploadedPhoto}
+                setUploadedPhoto={setUploadedPhoto}
+                setCropedImage={setCropedImage}
+                setStep={setStep}
+                step={step}
+              />
+            )}
             {step === 0 && (
               <div
                 className={`w-[50%]   max-sm:w-full flex flex-col  items-center justify-center max-sm:min-h-[50vh]`}
@@ -437,7 +448,9 @@ export default function ProductIdCustomize() {
                   <div className="w-full px-5 mt-10 max-sm:mt-3">
                     {images.length > 0 && (
                       <div className="flex justify-between items-center">
-                        <h6 className="font-semibold text-[#000000]">Uploaded Images</h6>
+                        <h6 className="font-semibold text-[#000000]">
+                          Uploaded Images
+                        </h6>
                         {images.length > 0 && (
                           <button
                             className="text-[#007ee5] underline font-semibold"

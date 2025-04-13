@@ -192,15 +192,14 @@ const ImageEditor = ({
             // Determine rotation adjustment based on vertical movement
             const rotationAdjustment = deltaY * 0.01; // Scale deltaY for smoother rotation
             setTransform((prev) => ({
-                ...prev,
-                rotation: prev.rotation + rotationAdjustment,
+              ...prev,
+              rotation: prev.rotation + rotationAdjustment,
             }));
             break;
-        }
-          
-           default:
+          }
+
+          default:
             break;
-          
         }
       };
 
@@ -211,7 +210,7 @@ const ImageEditor = ({
       isDragging,
       getContainerBounds,
       transform.aspectRatio,
-      setTransform
+      setTransform,
     ]
   );
 
@@ -258,7 +257,7 @@ const ImageEditor = ({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [getContainerBounds,setTransform,step]);
+  }, [getContainerBounds, setTransform, step]);
 
   const handleAddToCart = async (id: string, faceImage: string) => {
     if (!containerRef.current || !faceImage) {
@@ -295,18 +294,23 @@ const ImageEditor = ({
         const { result }: { result: string } = await response.json();
         return encodeURIComponent(result);
       };
+      const mainImage = localStorage.getItem("mainImg");
 
-      const [productImageUrl, faceImageUrl] = await Promise.all([
+      if (!mainImage) {
+        throw new Error("Main image not found in localStorage");
+      }
+      const [productImageUrl, faceImageUrl, mainImg] = await Promise.all([
         uploadImage(compositeCanvas.toDataURL("image/png"), "Composite"),
         uploadImage(faceImage, "Face"),
+        uploadImage(mainImage, "main image"),
       ]);
 
       // Validate upload results
-      if (!productImageUrl || !faceImageUrl) {
+      if (!productImageUrl || !faceImageUrl || !mainImg) {
         throw new Error("Image URL generation failed");
       }
 
-      window.location.href = `https://makeminime.com/?add-to-cart=${id}&quantity=1&image=${productImageUrl}&faceImage=${faceImageUrl}&uuid=${uuidgen}`;
+      window.location.href = `https://makeminime.com/?add-to-cart=${id}&quantity=1&image=${productImageUrl}&faceImage=${faceImageUrl}&mainImg=${mainImg}&uuid=${uuidgen}`;
     } catch (error) {
       console.error("Checkout Error:", error);
       // Implement your error handling strategy here (e.g., toast notifications)
@@ -330,7 +334,7 @@ const ImageEditor = ({
       } ${
         step === 7 &&
         "max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
-      } flex-col border-r border-r-gray-500 max-sm:border-r-0 items-center justify-center w-[50%] max-sm:w-full max-sm:border-b z-0 lg:min-h-[80vh] max-sm:min-h-[450px]  md:min-h-[80vh]  max-h-[80vh]  ${
+      } flex-col border-r border-r-gray-500 max-sm:border-r-0 items-center justify-center w-[50%] max-sm:w-full max-sm:border-b z-0 max-sm:min-h-[450px] min-h-[90vh] max-h-[90vh]  ${
         step === 0 || step === 4 || step === 7 || step === 8
           ? "flex"
           : "max-sm:hidden"
@@ -339,7 +343,7 @@ const ImageEditor = ({
       <div className="relative w-full flex justify-center items-center lg:min-h-[90vh] max-sm:min-h-[50vh] md:min-h-[80vh] max-sm:h-[35vh]">
         <div
           ref={containerRef}
-          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100 overflow-hidden"
+          className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100 "
         >
           {/* Background Layers */}
           <canvas
