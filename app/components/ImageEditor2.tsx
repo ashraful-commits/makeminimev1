@@ -106,7 +106,7 @@ const isCanvasFilterSupported = (() => {
     return false;
   }
 })();
-
+console.log(isCanvasFilterSupported?"true":"false")
 const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
   const canvas = canvasRef.current;
   if (!canvas) return;
@@ -122,10 +122,10 @@ const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
     // Apply filter using supported method
     if (isCanvasFilterSupported) {
       ctx.filter = filter;
-      canvas.style.filter = "none"; // Reset CSS filter
+      canvas.style.filter = "none"; 
     } else {
-      ctx.filter = "none"; // Ensure no context filter
-      canvas.style.filter = filter; // Use CSS filter fallback
+      ctx.filter = "none"; 
+      canvas.style.filter = filter; 
     }
 
     const width = canvas.width;
