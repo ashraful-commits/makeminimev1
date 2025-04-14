@@ -368,27 +368,23 @@ const ImageEditor = ({
         const { result }: { result: string } = await response.json();
         return encodeURIComponent(result);
       };
-      const mainImage = localStorage.getItem("mainImg");
 
-      if (!mainImage) {
-        throw new Error("Main image not found in localStorage");
-      }
-      const [productImageUrl, faceImageUrl, mainImg] = await Promise.all([
+
+      const [productImageUrl, faceImageUrl] = await Promise.all([
         uploadImage(compositeCanvas.toDataURL("image/png"), "Composite"),
         uploadImage(faceImage, "Face"),
-        uploadImage(mainImage, "main image"),
       ]);
 
       // Validate upload results
-      if (!productImageUrl || !faceImageUrl || !mainImg) {
+      if (!productImageUrl || !faceImageUrl) {
         throw new Error("Image URL generation failed");
       }
 
-      window.location.href = `https://makeminime.com/?add-to-cart=${id}&quantity=1&image=${productImageUrl}&faceImage=${faceImageUrl}&mainImg=${mainImg}&uuid=${uuidgen}`;
+      window.location.href = `https://makeminime.com/?add-to-cart=${id}&uuid=${uuidgen}`;
     } catch (error) {
       console.error("Checkout Error:", error);
       // Implement your error handling strategy here (e.g., toast notifications)
-      window.location.href = `https://makeminime.vercel.app/product/${id}/customize?error=${encodeURIComponent(
+      window.location.href = `http://localhost:5173/product/${id}/customize?error=${encodeURIComponent(
         (error as Error).message
       )}`;
     } finally {

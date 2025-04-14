@@ -3,7 +3,7 @@ import Camera from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
 import { FaArrowLeft } from "react-icons/fa";
 import ContainerBox from "./ContainerBox";
-import ButtonBox from './ButtonBox';
+import ButtonBox from "./ButtonBox";
 
 interface CameraComponentProps {
   setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -16,14 +16,37 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleTakePhoto = (dataUri: string) => {
+  const handleTakePhoto = async (dataUri: string) => {
     setIsLoading(true);
     setUploadedPhoto(dataUri);
-    localStorage.setItem("uploadImage", dataUri);
-    setTimeout(() => {
+
+    try {
+      const uploadImage = async (imageData: string, imageType: string) => {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: imageData,uuid:"main images" }),
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `${imageType} image upload failed (${response.status})`
+          );
+        }
+
+        const { result }: { result: string } = await response.json();
+        return encodeURIComponent(result);
+      };
+
+      const encodedResult = await uploadImage(dataUri, "capturedImage");
+      localStorage.setItem("uploadImage", encodedResult);
+
       setStep(1);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const handleBack = () => {
@@ -48,12 +71,14 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
           </div>
         )}
       </ContainerBox>
-      <ButtonBox><button
-        onClick={handleBack}
-        className="mt-4 px-10 py-3 flex items-center gap-2 bg-blue-500 border  text-white rounded-lg hover:bg-blue-600 transition duration-300 text-md font-bold"
-      >
-         Back to upload
-      </button></ButtonBox>
+      <ButtonBox>
+        <button
+          onClick={handleBack}
+          className="mt-4 px-10 py-3 flex items-center gap-2 bg-blue-500 border  text-white rounded-lg hover:bg-blue-600 transition duration-300 text-md font-bold"
+        >
+          Back to upload
+        </button>
+      </ButtonBox>
     </div>
   );
 };

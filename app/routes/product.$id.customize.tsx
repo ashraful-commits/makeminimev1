@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { useState, useEffect } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 
@@ -217,29 +218,51 @@ export default function ProductIdCustomize() {
     });
   };
 
-  const handleUploadPhoto = (e: any) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const base64 = e.target.result;
-        localStorage.setItem("mainImg", base64);
-        setUploadedPhoto(base64);
-        setStep(1);
-        localStorage.setItem("uploadImage", base64);
-        localStorage.setItem("mainImg", base64);
-      };
-      reader.readAsDataURL(file);
-    }
-    // if (file) {
-    //   const objectURL = URL.createObjectURL(file);
 
-    //   setUploadedPhoto(objectURL);
-    //   setStep(1);
-    //   localStorage.setItem("uploadImage", objectURL);
-    //   localStorage.setItem("mainImg", objectURL);
-    // }
+  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+  
+    const reader = new FileReader();
+  
+    reader.onload = async function (event) {
+      const base64 = event.target?.result as string;
+      if (!base64) return;
+  
+      // Update state and local storage
+      setUploadedPhoto(base64);
+      setStep(1);
+      localStorage.setItem("uploadImage", base64);
+  
+      // Upload image to server
+      const uploadImage = async (imageData: string, imageType: string) => {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: imageData,uuid:"main images" }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`${imageType} image upload failed (${response.status})`);
+        }
+  
+        const { result }: { result: string } = await response.json();
+        return encodeURIComponent(result);
+      };
+  
+      try {
+        const encodedResult = await uploadImage(base64, "mainImage");
+        console.log("Upload successful:", encodedResult);
+        // Optional: further logic with encodedResult
+      } catch (error) {
+        console.error("Upload failed:", error);
+      }
+    };
+  
+    reader.readAsDataURL(file);
   };
+  
+
   const handleTakePhoto = (e: any) => {
     setStep(6);
   };
