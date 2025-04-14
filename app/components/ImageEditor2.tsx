@@ -384,7 +384,7 @@ const ImageEditor = ({
     } catch (error) {
       console.error("Checkout Error:", error);
       // Implement your error handling strategy here (e.g., toast notifications)
-      window.location.href = `http://localhost:5173/product/${id}/customize?error=${encodeURIComponent(
+      window.location.href = `https://makeminime.vercel.app/product/${id}/customize?error=${encodeURIComponent(
         (error as Error).message
       )}`;
     } finally {
