@@ -213,18 +213,79 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
-  const handleAddToCart = () => {
-    domtoimage
-      .toPng(containerRef.current)
-      .then((dataUrl) => {
-        const link = document.createElement("a");
-        link.download = "downloaded-element.png";
+  const handleAddToCart = async () => {
+    if (!containerRef.current) return;
+  
+    // Safari/iOS specific fixes
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  
+    try {
+      const options = {
+        quality: 1,
+        style: {
+          transform: 'translateZ(0)', // Force hardware acceleration
+          backfaceVisibility: 'hidden'
+        },
+        filter: (node: HTMLElement) => {
+          // Remove problematic elements for iOS
+          if (isIOS && node.classList?.contains('position')) {
+            node.style.boxShadow = 'none';
+          }
+          return true;
+        }
+      };
+  
+      // Use different method for iOS/Safari
+      if (isIOS || isSafari) {
+        // Create temporary canvas
+        const canvas = await html2canvas(containerRef.current, {
+          useCORS: true,
+          logging: true,
+          scale: 3, // Higher scale for better quality
+          allowTaint: true,
+          backgroundColor: null,
+          onclone: (document, element) => {
+            // Force iOS repaint
+            element.style.webkitTransform = 'translateZ(0)';
+          }
+        });
+  
+        // Convert to blob for iOS compatibility
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          
+          // iOS specific download handling
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'design.png';
+          
+          // iOS requires this to be in the DOM
+          document.body.appendChild(link);
+          
+          // Trigger click with timeout
+          setTimeout(() => {
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }, 100);
+        }, 'image/png');
+      } else {
+        // Standard method for other browsers
+        const dataUrl = await domtoimage.toPng(containerRef.current, options);
+        const link = document.createElement('a');
+        link.download = 'design.png';
         link.href = dataUrl;
         link.click();
-      })
-      .catch((err) => {
-        console.error("Image generation failed!", err);
-      });
+      }
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback for iOS < 15
+      if (isIOS) {
+        alert('Please use the Share button and save to photos');
+      }
+    }
   };
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
