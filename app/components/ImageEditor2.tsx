@@ -225,9 +225,12 @@ const ImageEditor = ({
         height: 800,
         canvasWidth: 1114,
         canvasHeight: 1600,
+
         style: {
-          transform: "scale(1)",
-          transformOrigin: "top left",
+              transform: "scale(1)",
+              transformOrigin: "top left",
+              boxShadow: "none",
+              filter: "none", 
         },
       });
 
