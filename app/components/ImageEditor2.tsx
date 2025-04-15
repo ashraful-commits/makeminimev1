@@ -5,6 +5,8 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { v4 as uuidv4 } from "uuid";
 import { IoMove, IoResize } from "react-icons/io5";
 import { FaArrowsRotate } from "react-icons/fa6";
+import domtoimage from "dom-to-image-more";
+
 type HandleType = "move" | "resize" | "rotate";
 
 interface ImageEditorProps {
@@ -58,122 +60,6 @@ const ImageEditor = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
-  //   const canvas = canvasRef.current;
-  //   if (!canvas) return;
-
-  //   const ctx = canvas.getContext("2d");
-  //   const image = new Image();
-  //   image.crossOrigin = "anonymous";
-  //   image.src = imageSrc;
-
-  //   image.onload = () => {
-  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //     ctx.filter = filter;
-
-  //     const width = canvas.width;
-  //     const height = canvas.height;
-
-  //     const targetAspect = width / height;
-  //     const imgAspect = image.naturalWidth / image.naturalHeight;
-
-  //     let drawWidth, drawHeight;
-
-  //     if (imgAspect > targetAspect) {
-  //       drawHeight = height;
-  //       drawWidth = height * imgAspect;
-  //     } else {
-  //       drawWidth = width;
-  //       drawHeight = width / imgAspect;
-  //     }
-
-  //     const offsetX = (width - drawWidth) / 2;
-  //     const offsetY = (height - drawHeight) / 2;
-
-  //     ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-  //   };
-  // };
-
-  // Check if CanvasRenderingContext2D.filter is supported
-  const isCanvasFilterSupported = (() => {
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1;
-      canvas.height = 1;
-      const ctx = canvas.getContext('2d');
-      
-      // Draw a red pixel
-      ctx.fillStyle = '#FF0000';
-      ctx.fillRect(0, 0, 1, 1);
-      
-      // Apply brightness filter to make it black
-      ctx.filter = 'brightness(0)';
-      ctx.fillRect(0, 0, 1, 1);
-      
-      // Check the pixel color
-      const pixel = ctx.getImageData(0, 0, 1, 1).data;
-      return pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0; // Check if black
-    } catch (e) {
-      return false;
-    }
-  })();
-  
-  console.log(isCanvasFilterSupported ? "true" : "false");
-  
-  const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-  
-    const ctx = canvas.getContext("2d");
-    const image = new Image();
-    image.crossOrigin = "anonymous";
-    image.src = imageSrc;
-  
-    image.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-      // Apply filter using supported method
-      if (isCanvasFilterSupported) {
-        ctx.filter = filter;
-        canvas.style.filter = "none"; 
-      } else {
-        ctx.filter = "none"; 
-        canvas.style.filter = filter; 
-      }
-  
-      const width = canvas.width;
-      const height = canvas.height;
-      const targetAspect = width / height;
-      const imgAspect = image.naturalWidth / image.naturalHeight;
-  
-      let drawWidth, drawHeight;
-  
-      if (imgAspect > targetAspect) {
-        drawHeight = height;
-        drawWidth = height * imgAspect;
-      } else {
-        drawWidth = width;
-        drawHeight = width / imgAspect;
-      }
-  
-      const offsetX = (width - drawWidth) / 2;
-      const offsetY = (height - drawHeight) / 2;
-  
-      ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-    };
-  };
-  useEffect(() => {
-    drawImageOnCanvas(canvasBodyRef, defaultBodyImage);
-    drawImageOnCanvas(canvasSkinToneRef, defaultSkitToneImage, defaultSkinTone);
-    // drawImageOnCanvas(canvasHeadBackRef, defaultHeadBackImage,defaultSkinTone);
-    drawImageOnCanvas(canvasTransparentRef, defualtTransparentBodyImage);
-  }, [
-    defaultBodyImage,
-    defaultSkitToneImage,
-    defaultSkinTone,
-    defaultHeadBackImage,
-  ]);
 
   const [activeHandle, setActiveHandle] = useState<HandleType | null>(null);
 
@@ -327,70 +213,79 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
-  const handleAddToCart = async (id: string, faceImage: string) => {
-    if (!containerRef.current || !faceImage) {
-      console.error("Missing required elements for image processing");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // Capture composite image
-      const compositeCanvas = await html2canvas(containerRef.current, {
-        useCORS: true,
-        backgroundColor: "transparent",
-        logging: process.env.NODE_ENV === "development",
-        scale: 2, // Improve resolution for retina displays
-        onclone: (clonedDoc) => {
-          // Ensure images are CORS-compliant in cloned document
-          const images = clonedDoc.querySelectorAll("img");
-          images.forEach(img => img.setAttribute("crossOrigin", "anonymous"));
-        }
+  const handleAddToCart = () => {
+    domtoimage
+      .toPng(containerRef.current)
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = "downloaded-element.png";
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.error("Image generation failed!", err);
       });
-
-      //uuid
-      const uuidgen = uuidv4();
-      // Prepare upload promises
-      const uploadImage = async (imageData: string, imageType: string) => {
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: imageData, uuid: uuidgen }),
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            `${imageType} image upload failed (${response.status})`
-          );
-        }
-
-        const { result }: { result: string } = await response.json();
-        return encodeURIComponent(result);
-      };
-
-
-      const [productImageUrl, faceImageUrl] = await Promise.all([
-        uploadImage(compositeCanvas.toDataURL("image/png"), "Composite"),
-        uploadImage(faceImage, "Face"),
-      ]);
-
-      // Validate upload results
-      if (!productImageUrl || !faceImageUrl) {
-        throw new Error("Image URL generation failed");
-      }
-
-      window.location.href = `https://makeminime.com/?add-to-cart=${id}&uuid=${uuidgen}`;
-    } catch (error) {
-      console.error("Checkout Error:", error);
-      // Implement your error handling strategy here (e.g., toast notifications)
-      window.location.href = `https://makeminime.vercel.app/product/${id}/customize?error=${encodeURIComponent(
-        (error as Error).message
-      )}`;
-    } finally {
-      setLoading(false);
-    }
   };
+  // const handleAddToCart = async (id: string, faceImage: string) => {
+  //   if (!containerRef.current || !faceImage) {
+  //     console.error("Missing required elements for image processing");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     // Capture composite image
+  //     const compositeCanvas = await html2canvas(containerRef.current, {
+  //       useCORS: true,
+  //       backgroundColor: "transparent",
+  //       logging: process.env.NODE_ENV === "development",
+  //       scale: 2,
+  //     });
+
+  //     //uuid
+  //     const uuidgen = uuidv4();
+  //     // Prepare upload promises
+  //     const uploadImage = async (imageData: string, imageType: string) => {
+  //       const response = await fetch("/api/upload", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ image: imageData, uuid: uuidgen }),
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(
+  //           `${imageType} image upload failed (${response.status})`
+  //         );
+  //       }
+
+  //       const { result }: { result: string } = await response.json();
+  //       return encodeURIComponent(result);
+  //     };
+  //     const mainImge = localStorage.getItem("mainImage");
+
+  //     const [productImageUrl, faceImageUrl, mainImage] = await Promise.all([
+  //       uploadImage(compositeCanvas.toDataURL("image/png"), "Composite"),
+  //       uploadImage(faceImage, "Face"),
+  //       uploadImage(mainImge, "Face"),
+  //     ]);
+
+  //     // Validate upload results
+  //     if (!productImageUrl || !faceImageUrl) {
+  //       throw new Error("Image URL generation failed");
+  //     }
+
+  //     window.location.href = `https://makeminime.com/?add-to-cart=${id}&quantity=1&image=${productImageUrl}&faceImage=${faceImageUrl}&uuid=${uuidgen}`;
+  //   } catch (error) {
+  //     console.error("Checkout Error:", error);
+  //     // Implement your error handling strategy here (e.g., toast notifications)
+  //     window.location.href = `https://makeminime.vercel.app/product/${id}/customize?error=${encodeURIComponent(
+  //       (error as Error).message
+  //     )}`;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const dynamicX = transform.x;
   const dynamicY = transform.y;
   return (
@@ -415,14 +310,6 @@ const ImageEditor = ({
           ref={containerRef}
           className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100 "
         >
-          {/* Background Layers */}
-          <canvas
-            ref={canvasHeadBackRef}
-            width={"557px"}
-            height={"800px"}
-            className="absolute z-10 h-full"
-          />
-
           {/* Face Image */}
           {faceImage ? (
             <div
@@ -467,14 +354,14 @@ const ImageEditor = ({
                     transformOrigin: "center",
                     zIndex: 30,
                   }}
-                  className=" w-auto h-full mx-auto"
+                  className=" w-auto h-full mx-auto border-none"
                   alt=""
                 />
               </div>
             </div>
           ) : (
             <img
-              className="top-10 absolute max-h-[350px] z-40"
+              className="top-10 absolute max-h-[350px] z-40 border-none"
               src={"/images/Layer_40_face_preview.png"}
               alt="face preview"
             />
@@ -544,8 +431,8 @@ const ImageEditor = ({
                     <div
                       // Move Handle
                       className="flex justify-center items-center"
-                      role="button" // Add a role attribute to indicate that it's a interactive element
-                      tabIndex={0} // Add tabIndex to make it focusable
+                      role="button"
+                      tabIndex={0}
                       style={{
                         position: "absolute",
                         top: -28,
@@ -581,7 +468,7 @@ const ImageEditor = ({
                             handleStart("move", e.clientX, e.clientY);
                           }
                         }
-                      }} // Add support for keyboard input
+                      }}
                     >
                       <IoMove className="text-md text-blue-50" />
                     </div>
@@ -601,7 +488,7 @@ const ImageEditor = ({
                         borderRadius: "50%",
                         touchAction: "none",
                         transition: "background-color 0.2s, transform 0.3s",
-                        zIndex: 100, // Ensure it's on top
+                        zIndex: 100,
                       }}
                       className="flex items-center justify-center"
                       onMouseDown={(e) => {
@@ -623,14 +510,14 @@ const ImageEditor = ({
                           e.preventDefault();
                           handleStart("rotate", e.clientX, e.clientY);
                         }
-                      }} // Add support for keyboard input
+                      }}
                     >
                       <FaArrowsRotate className="text-sm text-blue-50" />
                     </div>
                     <div
                       // Rotate Handle
-                      role="button" // Add a role attribute to indicate that it's a button
-                      tabIndex={0} // Add tabIndex to make it focusable
+                      role="button"
+                      tabIndex={0}
                       style={{
                         position: "absolute",
                         bottom: -28,
@@ -647,12 +534,11 @@ const ImageEditor = ({
                         transition: "background-color 0.2s, transform 0.3s",
                       }}
                       className="flex items-center justify-center "
-                      // Add support for keyboard input
                     ></div>
                     <div
                       // Resize Handle
-                      role="button" // Add a role attribute to indicate that it's a button
-                      tabIndex={0} // Add tabIndex to make it focusable
+                      role="button"
+                      tabIndex={0}
                       style={{
                         position: "absolute",
                         bottom: -28,
@@ -694,26 +580,57 @@ const ImageEditor = ({
               </div>
             </div>
           )}
+          {/* Background Layers */}
+
+          <div
+            ref={canvasHeadBackRef}
+            className="absolute z-10 h-full"
+            style={{ width: "557px", height: "800px" }}
+          >
+            <img
+              style={{ filter: skinTone }}
+              src={defaultHeadBackImage} 
+              className="h-full w-auto"
+              alt="head background"
+            />
+          </div>
           {/* Other Layers */}
-          <canvas
+          <div
             ref={canvasSkinToneRef}
-            width={"557px"}
-            height={"800px"}
-            className="absolute z-1 h-full "
-          />
-          <canvas
-            style={{ zIndex: 50 }}
+            className="absolute z-1 h-full"
+            style={{ width: "557px", height: "800px" }}
+          >
+            <img
+              style={{ filter: skinTone }}
+              src={defaultSkitToneImage} 
+              className="h-full w-auto"
+              alt="skin tone"
+            />
+          </div>
+
+          <div
+            style={{ zIndex: 50, width: "557px", height: "800px" }}
             ref={canvasTransparentRef}
-            width={"557px"}
-            height={"800px"}
-            className="absolute  h-full z-50 pointer-events-none overflow-hidden"
-          />
-          <canvas
+            className="absolute h-full z-50 pointer-events-none overflow-hidden"
+          >
+            <img
+              src={defualtTransparentBodyImage} 
+              className="h-full w-auto"
+              alt="transparent overlay"
+            />
+          </div>
+
+          <div
             ref={canvasBodyRef}
-            width={"557px"}
-            height={"800px"}
-            className=" absolute z-20 top-[0.20rem] h-full "
-          />
+            className="absolute z-20 top-[0.20rem] h-full"
+            style={{ width: "557px", height: "800px" }}
+          >
+            <img
+              src={defaultBodyImage} 
+              className="h-full w-auto"
+              alt="body layer"
+            />
+          </div>
         </div>
       </div>
 
