@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { IoMove, IoResize } from "react-icons/io5";
 import { FaArrowsRotate } from "react-icons/fa6";
 import domtoimage from "dom-to-image-more";
-
+import * as htmlToImage from 'html-to-image';
 type HandleType = "move" | "resize" | "rotate";
 
 interface ImageEditorProps {
@@ -213,21 +213,29 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
+
   const handleAddToCart = async () => {
     if (containerRef.current) {
-      try {
-        const dataUrl = await domtoimage.toPng(containerRef.current, { bgcolor: '#ffffff' }); // Set background if needed
-        const link = document.createElement('a');
-        link.download = 'image.png';
-        link.href = dataUrl;
-        link.click();
-      } catch (error) {
-        console.error("Error generating image: ", error);
-      }
+        try {
+            // Capture the content of the ref'd container as an image
+            const dataUrl = await htmlToImage.toPng(containerRef.current, {
+                quality: 1.0, // Adjust quality for PNG
+            });
+
+            // Create a link element for downloading the image
+            const link = document.createElement('a');
+            link.download = 'captured-image.png'; // Set the filename
+            link.href = dataUrl; // Set the data URL
+            link.click(); // Trigger the download
+        } catch (error) {
+            console.error("Error during image generation: ", error);
+            alert("An error occurred while generating the image. Please try again.");
+        }
     } else {
-      console.error("Container ref is null");
+        console.error("Container ref is null");
+        alert("Unable to capture the image. Please ensure that the content is available.");
     }
-  };
+};
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
   //     console.error("Missing required elements for image processing");
@@ -593,7 +601,7 @@ const ImageEditor = ({
           >
             <img
               style={{
-                filter: "invert(71%) sepia(51%) saturate(280%) hue-rotate(340deg) brightness(86%) contrast(88%)"
+                filter: skinTone
                 
               }}
               crossOrigin="anonymous"
@@ -610,7 +618,7 @@ const ImageEditor = ({
           >
             <img
               style={{
-                filter: "invert(71%) sepia(51%) saturate(280%) hue-rotate(340deg) brightness(86%) contrast(88%)"
+                filter: skinTone
                 
               }}
               crossOrigin="anonymous"
