@@ -231,25 +231,25 @@ const ImageEditor = ({
         },
       });
 
-      // // For iOS devices, open in new tab
-      // if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      //   window.open(dataUrl, "_blank");
-      //   return;
-      // }
+      // For iOS devices, open in new tab
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        window.open(dataUrl, "_blank");
+        return;
+      }
 
-      // // For macOS Safari, use Blob approach
-      // if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      //   const blob = await fetch(dataUrl).then((res) => res.blob());
-      //   const blobUrl = window.URL.createObjectURL(blob);
-      //   const link = document.createElement("a");
-      //   link.href = blobUrl;
-      //   link.download = "avatar.png";
-      //   document.body.appendChild(link);
-      //   link.click();
-      //   document.body.removeChild(link);
-      //   window.URL.revokeObjectURL(blobUrl);
-      //   return;
-      // }
+      // For macOS Safari, use Blob approach
+      if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+        const blob = await fetch(dataUrl).then((res) => res.blob());
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = "avatar.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+        return;
+      }
 
       // For other devices, use direct download
       const link = document.createElement("a");
@@ -683,7 +683,7 @@ const ImageEditor = ({
       </div>
 
       {/* Controls */}
-      {/* {step === 7 && ( */}
+      {step === 7 && (
       <>
         <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end max-sm:-mb-[100px] lg:right-3 md:right-3">
           <div className="flex gap-4 mb-2 ">
@@ -707,7 +707,7 @@ const ImageEditor = ({
           </div>
         </div>
       </>
-      {/* )} */}
+       )}
     </div>
   );
 };
