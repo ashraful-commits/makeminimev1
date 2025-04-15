@@ -214,8 +214,14 @@ const ImageEditor = ({
   }, [getContainerBounds, setTransform, step]);
 
   const handleAddToCart = () => {
+    const container = containerRef.current;
+  
+    // Ensure the element is fully rendered and dimensions are calculated
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+  
     domtoimage
-      .toPng(containerRef.current)
+      .toPng(container, { width, height })
       .then((dataUrl) => {
         const link = document.createElement("a");
         link.download = "downloaded-element.png";
@@ -226,6 +232,7 @@ const ImageEditor = ({
         console.error("Image generation failed!", err);
       });
   };
+  
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
   //     console.error("Missing required elements for image processing");
