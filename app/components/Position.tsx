@@ -44,7 +44,7 @@ const Position = ({ setStep, setTransform }) => {
     e.preventDefault();
     setTransform((prev) => ({
       ...prev,
-      y: Math.max(prev.y - 10, 0), // Prevent moving out of bounds
+      y: Math.max(prev.y - 10, 0), 
     }));
   };
 
@@ -52,7 +52,7 @@ const Position = ({ setStep, setTransform }) => {
     e.preventDefault();
     setTransform((prev) => ({
       ...prev,
-      y: prev.y + 10, // You may want to limit maximum movement here
+      y: prev.y + 10, 
     }));
   };
 
@@ -60,7 +60,7 @@ const Position = ({ setStep, setTransform }) => {
     e.preventDefault();
     setTransform((prev) => ({
       ...prev,
-      x: prev.x - 10, // Prevent moving out of bounds
+      x: prev.x - 10,
     }));
   };
 

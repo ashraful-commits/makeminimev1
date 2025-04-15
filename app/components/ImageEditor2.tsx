@@ -5,8 +5,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { v4 as uuidv4 } from "uuid";
 import { IoMove, IoResize } from "react-icons/io5";
 import { FaArrowsRotate } from "react-icons/fa6";
-import domtoimage from "dom-to-image-more";
-import { toPng } from "html-to-image";
+import { toPng } from 'html-to-image';
 type HandleType = "move" | "resize" | "rotate";
 
 interface ImageEditorProps {
@@ -60,6 +59,86 @@ const ImageEditor = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  
+  const isCanvasFilterSupported = (() => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw a red pixel
+      ctx.fillStyle = '#FF0000';
+      ctx.fillRect(0, 0, 1, 1);
+      
+      // Apply brightness filter to make it black
+      ctx.filter = 'brightness(0)';
+      ctx.fillRect(0, 0, 1, 1);
+      
+      // Check the pixel color
+      const pixel = ctx.getImageData(0, 0, 1, 1).data;
+      return pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0; // Check if black
+    } catch (e) {
+      return false;
+    }
+  })();
+  
+  console.log(isCanvasFilterSupported ? "true" : "false");
+  
+  const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+  
+    const ctx = canvas.getContext("2d");
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = imageSrc;
+  
+    image.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+      // Apply filter using supported method
+      if (isCanvasFilterSupported) {
+        ctx.filter = filter;
+        canvas.style.filter = "none"; 
+      } else {
+        ctx.filter = "none"; 
+        canvas.style.filter = filter; 
+      }
+  
+      const width = canvas.width;
+      const height = canvas.height;
+      const targetAspect = width / height;
+      const imgAspect = image.naturalWidth / image.naturalHeight;
+  
+      let drawWidth, drawHeight;
+  
+      if (imgAspect > targetAspect) {
+        drawHeight = height;
+        drawWidth = height * imgAspect;
+      } else {
+        drawWidth = width;
+        drawHeight = width / imgAspect;
+      }
+  
+      const offsetX = (width - drawWidth) / 2;
+      const offsetY = (height - drawHeight) / 2;
+  
+      ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+    };
+  };
+  useEffect(() => {
+    drawImageOnCanvas(canvasBodyRef, defaultBodyImage);
+    drawImageOnCanvas(canvasSkinToneRef, defaultSkitToneImage, defaultSkinTone);
+    // drawImageOnCanvas(canvasHeadBackRef, defaultHeadBackImage,defaultSkinTone);
+    drawImageOnCanvas(canvasTransparentRef, defualtTransparentBodyImage);
+  }, [
+    defaultBodyImage,
+    defaultSkitToneImage,
+    defaultSkinTone,
+    defaultHeadBackImage,
+  ]);
 
   const [activeHandle, setActiveHandle] = useState<HandleType | null>(null);
 
@@ -213,40 +292,38 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart=async()=>{
     if (!containerRef.current) return;
 
     try {
+      // Create PNG from the container with enhanced quality settings
       const dataUrl = await toPng(containerRef.current, {
         cacheBust: true,
-        pixelRatio: window.devicePixelRatio || 2,
+        pixelRatio: window.devicePixelRatio || 2, // Use device pixel ratio or fallback to 2
         quality: 1,
         width: 557,
         height: 800,
-        canvasWidth: 1114,
-        canvasHeight: 1600,
-
+        canvasWidth: 1114, // Double width for better quality
+        canvasHeight: 1600, // Double height for better quality
         style: {
-          transform: "scale(1)",
-          transformOrigin: "top left",
-          boxShadow: "none",
-          filter: "none",
+          transform: 'scale(1)', // Ensure proper scaling
+          transformOrigin: 'top left',
         },
       });
 
-      // // For iOS devices, open in new tab
+      // For iOS devices, open in new tab
       if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        window.open(dataUrl, "_blank");
+        window.open(dataUrl, '_blank');
         return;
       }
 
       // For macOS Safari, use Blob approach
       if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-        const blob = await fetch(dataUrl).then((res) => res.blob());
+        const blob = await fetch(dataUrl).then(res => res.blob());
         const blobUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = blobUrl;
-        link.download = "avatar.png";
+        link.download = 'avatar.png';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -255,15 +332,15 @@ const ImageEditor = ({
       }
 
       // For other devices, use direct download
-      const link = document.createElement("a");
-      link.download = "avatar.png";
+      const link = document.createElement('a');
+      link.download = 'facepillow.png';
       link.href = dataUrl;
       link.click();
     } catch (err) {
-      console.error("Error downloading image:", err);
+      console.error('Error downloading image:', err);
     }
-  };
 
+  }
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
   //     console.error("Missing required elements for image processing");
@@ -280,7 +357,7 @@ const ImageEditor = ({
   //       logging: process.env.NODE_ENV === "development",
   //       scale: 2,
   //     });
-  //    console.log(containerRef.current)
+
   //     //uuid
   //     const uuidgen = uuidv4();
   //     // Prepare upload promises
@@ -300,9 +377,9 @@ const ImageEditor = ({
   //       const { result }: { result: string } = await response.json();
   //       return encodeURIComponent(result);
   //     };
-  //     const mainImge = localStorage.getItem("mainImage");
+  //       const mainImge= localStorage.getItem("mainImage");
 
-  //     const [productImageUrl, faceImageUrl, mainImage] = await Promise.all([
+  //     const [productImageUrl, faceImageUrl,mainImage] = await Promise.all([
   //       uploadImage(compositeCanvas.toDataURL("image/png"), "Composite"),
   //       uploadImage(faceImage, "Face"),
   //       uploadImage(mainImge, "Face"),
@@ -346,13 +423,16 @@ const ImageEditor = ({
       <div className="relative w-full flex justify-center items-center lg:min-h-[90vh] max-sm:min-h-[50vh] md:min-h-[80vh] max-sm:h-[35vh]">
         <div
           ref={containerRef}
-          style={{
-            transformOrigin: 'center center',
-            maxWidth: '100vw',
-            willChange: 'transform',
-          }}
           className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100 "
         >
+          {/* Background Layers */}
+          <canvas
+            ref={canvasHeadBackRef}
+            width={"557px"}
+            height={"800px"}
+            className="absolute z-10 h-full"
+          />
+
           {/* Face Image */}
           {faceImage ? (
             <div
@@ -397,14 +477,14 @@ const ImageEditor = ({
                     transformOrigin: "center",
                     zIndex: 30,
                   }}
-                  className=" w-auto h-full mx-auto border-none"
+                  className=" w-auto h-full mx-auto"
                   alt=""
                 />
               </div>
             </div>
           ) : (
             <img
-              className="top-10 absolute max-h-[350px] z-40 border-none"
+              className="top-10 absolute max-h-[350px] z-40"
               src={"/images/Layer_40_face_preview.png"}
               alt="face preview"
             />
@@ -474,8 +554,8 @@ const ImageEditor = ({
                     <div
                       // Move Handle
                       className="flex justify-center items-center"
-                      role="button"
-                      tabIndex={0}
+                      role="button" // Add a role attribute to indicate that it's a interactive element
+                      tabIndex={0} // Add tabIndex to make it focusable
                       style={{
                         position: "absolute",
                         top: -28,
@@ -511,7 +591,7 @@ const ImageEditor = ({
                             handleStart("move", e.clientX, e.clientY);
                           }
                         }
-                      }}
+                      }} // Add support for keyboard input
                     >
                       <IoMove className="text-md text-blue-50" />
                     </div>
@@ -531,7 +611,7 @@ const ImageEditor = ({
                         borderRadius: "50%",
                         touchAction: "none",
                         transition: "background-color 0.2s, transform 0.3s",
-                        zIndex: 100,
+                        zIndex: 100, // Ensure it's on top
                       }}
                       className="flex items-center justify-center"
                       onMouseDown={(e) => {
@@ -553,14 +633,14 @@ const ImageEditor = ({
                           e.preventDefault();
                           handleStart("rotate", e.clientX, e.clientY);
                         }
-                      }}
+                      }} // Add support for keyboard input
                     >
                       <FaArrowsRotate className="text-sm text-blue-50" />
                     </div>
                     <div
                       // Rotate Handle
-                      role="button"
-                      tabIndex={0}
+                      role="button" // Add a role attribute to indicate that it's a button
+                      tabIndex={0} // Add tabIndex to make it focusable
                       style={{
                         position: "absolute",
                         bottom: -28,
@@ -577,11 +657,12 @@ const ImageEditor = ({
                         transition: "background-color 0.2s, transform 0.3s",
                       }}
                       className="flex items-center justify-center "
+                      // Add support for keyboard input
                     ></div>
                     <div
                       // Resize Handle
-                      role="button"
-                      tabIndex={0}
+                      role="button" // Add a role attribute to indicate that it's a button
+                      tabIndex={0} // Add tabIndex to make it focusable
                       style={{
                         position: "absolute",
                         bottom: -28,
@@ -623,61 +704,26 @@ const ImageEditor = ({
               </div>
             </div>
           )}
-          {/* Background Layers */}
-
-          <div
-            ref={canvasHeadBackRef}
-            className="absolute z-10 h-full"
-            style={{ width: "557px", height: "800px" }}
-          >
-            <img
-              style={{
-                filter: skinTone,
-              }}
-              src={defaultHeadBackImage}
-              className="h-full w-auto"
-              alt="head background"
-            />
-          </div>
           {/* Other Layers */}
-          <div
+          <canvas
             ref={canvasSkinToneRef}
-            className="absolute z-1 h-full"
-            style={{ width: "557px", height: "800px" }}
-          >
-            <img
-              style={{
-                filter: skinTone,
-              }}
-              src={defaultSkitToneImage}
-              className="h-full w-auto"
-              alt="skin tone"
-            />
-          </div>
-
-          <div
-            style={{ zIndex: 50, width: "557px", height: "800px" }}
+            width={"557px"}
+            height={"800px"}
+            className="absolute z-1 h-full "
+          />
+          <canvas
+            style={{ zIndex: 50 }}
             ref={canvasTransparentRef}
-            className="absolute h-full z-50 pointer-events-none overflow-hidden"
-          >
-            <img
-              src={defualtTransparentBodyImage}
-              className="h-full w-auto"
-              alt="transparent overlay"
-            />
-          </div>
-
-          <div
+            width={"557px"}
+            height={"800px"}
+            className="absolute  h-full z-50 pointer-events-none overflow-hidden"
+          />
+          <canvas
             ref={canvasBodyRef}
-            className="absolute z-20 top-[0.20rem] h-full"
-            style={{ width: "557px", height: "800px" }}
-          >
-            <img
-              src={defaultBodyImage}
-              className="h-full w-auto"
-              alt="body layer"
-            />
-          </div>
+            width={"557px"}
+            height={"800px"}
+            className=" absolute z-20 top-[0.20rem] h-full "
+          />
         </div>
       </div>
 
@@ -687,12 +733,6 @@ const ImageEditor = ({
           <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end max-sm:-mb-[100px] lg:right-3 md:right-3">
             <div className="flex gap-4 mb-2 ">
               <button
-                style={{
-                  WebkitTapHighlightColor: "transparent",
-                  touchAction: "manipulation",
-                  WebkitAppearance: "none",
-                  WebkitUserSelect: "none",
-                }}
                 onClick={() => handleAddToCart(productId, faceImage)}
                 className="bg-green-600 text-white px-6 py-3 flex justify-center items-center rounded-md text-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
               >

@@ -25,7 +25,6 @@ import { json } from "@remix-run/node";
 import { Buffer } from "buffer";
 import SkinTone from "~/components/SkinTone";
 import Position from "~/components/Position";
-import CompositeCanvas from "~/components/Download";
 
 // Type for product meta data
 interface ProductMetaData {
@@ -566,7 +565,7 @@ export default function ProductIdCustomize() {
           </div>
         </>
       )}
-      <CompositeCanvas/>
+
     </div>
   );
 }
