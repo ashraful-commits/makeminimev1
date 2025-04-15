@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { IoMove, IoResize } from "react-icons/io5";
 import { FaArrowsRotate } from "react-icons/fa6";
 import domtoimage from "dom-to-image-more";
-import { toPng } from 'html-to-image';
+import { toPng } from "html-to-image";
 type HandleType = "move" | "resize" | "rotate";
 
 interface ImageEditorProps {
@@ -213,54 +213,53 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
-const handleAddToCart =async()=>{
-  if (!containerRef.current) return;
+  const handleAddToCart = async () => {
+    if (!containerRef.current) return;
 
-  try {
-    // Create PNG from the container with enhanced quality settings
-    const dataUrl = await toPng(containerRef.current, {
-      cacheBust: true,
-      pixelRatio: window.devicePixelRatio || 2, // Use device pixel ratio or fallback to 2
-      quality: 1,
-      width: 557,
-      height: 800,
-      canvasWidth: 1114, // Double width for better quality
-      canvasHeight: 1600, // Double height for better quality
-      style: {
-        transform: 'scale(1)', // Ensure proper scaling
-        transformOrigin: 'top left',
-      },
-    });
+    try {
+      const dataUrl = await toPng(containerRef.current, {
+        cacheBust: true,
+        pixelRatio: window.devicePixelRatio || 2,
+        quality: 1,
+        width: 557,
+        height: 800,
+        canvasWidth: 1114,
+        canvasHeight: 1600,
+        style: {
+          transform: "scale(1)",
+          transformOrigin: "top left",
+        },
+      });
 
-    // For iOS devices, open in new tab
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      window.open(dataUrl, '_blank');
-      return;
-    }
+      // // For iOS devices, open in new tab
+      // if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      //   window.open(dataUrl, "_blank");
+      //   return;
+      // }
 
-    // For macOS Safari, use Blob approach
-    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      const blob = await fetch(dataUrl).then(res => res.blob());
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = 'avatar.png';
-      document.body.appendChild(link);
+      // // For macOS Safari, use Blob approach
+      // if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+      //   const blob = await fetch(dataUrl).then((res) => res.blob());
+      //   const blobUrl = window.URL.createObjectURL(blob);
+      //   const link = document.createElement("a");
+      //   link.href = blobUrl;
+      //   link.download = "avatar.png";
+      //   document.body.appendChild(link);
+      //   link.click();
+      //   document.body.removeChild(link);
+      //   window.URL.revokeObjectURL(blobUrl);
+      //   return;
+      // }
+
+      // For other devices, use direct download
+      const link = document.createElement("a");
+      link.download = "avatar.png";
+      link.href = dataUrl;
       link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-      return;
+    } catch (err) {
+      console.error("Error downloading image:", err);
     }
-
-    // For other devices, use direct download
-    const link = document.createElement('a');
-    link.download = 'avatar.png';
-    link.href = dataUrl;
-    link.click();
-  } catch (err) {
-    console.error('Error downloading image:', err);
-  }
-}
+  };
 
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
@@ -345,7 +344,7 @@ const handleAddToCart =async()=>{
         <div
           ref={containerRef}
           style={{
-            transformOrigin:'center center'
+            transformOrigin: "center center",
           }}
           className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100 "
         >
@@ -630,8 +629,7 @@ const handleAddToCart =async()=>{
           >
             <img
               style={{
-                filter: skinTone
-                
+                filter: skinTone,
               }}
               crossOrigin="anonymous"
               src={defaultHeadBackImage}
@@ -647,8 +645,7 @@ const handleAddToCart =async()=>{
           >
             <img
               style={{
-                filter: skinTone
-                
+                filter: skinTone,
               }}
               crossOrigin="anonymous"
               src={defaultSkitToneImage}
@@ -691,12 +688,12 @@ const handleAddToCart =async()=>{
         <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end max-sm:-mb-[100px] lg:right-3 md:right-3">
           <div className="flex gap-4 mb-2 ">
             <button
-            style={{
-              WebkitTapHighlightColor: 'transparent',
-              touchAction: 'manipulation',
-              WebkitAppearance: 'none',
-              WebkitUserSelect: 'none',
-            }}
+              style={{
+                WebkitTapHighlightColor: "transparent",
+                touchAction: "manipulation",
+                WebkitAppearance: "none",
+                WebkitUserSelect: "none",
+              }}
               onClick={() => handleAddToCart(productId, faceImage)}
               className="bg-green-600 text-white px-6 py-3 flex justify-center items-center rounded-md text-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
