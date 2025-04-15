@@ -348,6 +348,7 @@ const ImageEditor = ({
               >
                 <img
                   src={defaultFaceImage}
+                   crossOrigin="anonymous"
                   style={{
                     width: "auto",
                     height: "100%",
@@ -365,6 +366,7 @@ const ImageEditor = ({
               className="top-10 absolute max-h-[350px] z-40 border-none"
               src={"/images/Layer_40_face_preview.png"}
               alt="face preview"
+               crossOrigin="anonymous"
             />
           )}
           {faceImage && (
@@ -592,6 +594,7 @@ const ImageEditor = ({
               style={{
                 filter: skinTone,
               }}
+               crossOrigin="anonymous"
               src={defaultHeadBackImage}
               className="h-full w-auto"
               alt="head background"
@@ -607,7 +610,7 @@ const ImageEditor = ({
               style={{
                 filter: skinTone,
               }}
- 
+  crossOrigin="anonymous"
               src={defaultSkitToneImage}
               className="h-full w-auto"
               alt="skin tone"
@@ -620,6 +623,7 @@ const ImageEditor = ({
             className="absolute h-full z-50 pointer-events-none overflow-hidden"
           >
             <img
+             crossOrigin="anonymous"
               src={defualtTransparentBodyImage}
               className="h-full w-auto"
               alt="transparent overlay"
@@ -632,6 +636,7 @@ const ImageEditor = ({
             style={{ width: "557px", height: "800px" }}
           >
             <img
+             crossOrigin="anonymous"
               src={defaultBodyImage}
               className="h-full w-auto"
               alt="body layer"
