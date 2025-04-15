@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { IoMove, IoResize } from "react-icons/io5";
 import { FaArrowsRotate } from "react-icons/fa6";
 import domtoimage from "dom-to-image-more";
-import { toPng } from 'html-to-image';
+
 type HandleType = "move" | "resize" | "rotate";
 
 interface ImageEditorProps {
@@ -214,18 +214,35 @@ const ImageEditor = ({
   }, [getContainerBounds, setTransform, step]);
 
   const handleAddToCart = async () => {
-   toPng(containerRef.current)
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.href = dataUrl; // Set the generated data URL
-        link.download = 'download.png'; // Specify the file name
-        document.body.appendChild(link); // Append link to the body
-        link.click(); // Trigger the download
-        document.body.removeChild(link); // Clean up by removing the link
-      })
-      .catch((error) => {
-        console.error('Error generating image:', error);
-      });
+    if (!containerRef.current) return;
+  
+    const compositeCanvas = await html2canvas(containerRef.current, {
+      useCORS: true,
+      backgroundColor: null,
+      logging: true,
+      scale: 2,
+    });
+  
+    // Create a new canvas to apply filters
+    const filteredCanvas = document.createElement("canvas");
+    const ctx = filteredCanvas.getContext("2d");
+  
+    // Set filteredCanvas size same as compositeCanvas
+    filteredCanvas.width = compositeCanvas.width;
+    filteredCanvas.height = compositeCanvas.height;
+  
+    // Draw the captured image on the new canvas
+    ctx.drawImage(compositeCanvas, 0, 0);
+  
+    // Apply filters programmatically with ctx
+    // Example: Adjust brightness
+    ctx.filter = skinTone
+    ctx.drawImage(filteredCanvas, 0, 0);
+  
+    const link = document.createElement("a");
+    link.href = filteredCanvas.toDataURL("image/png");
+    link.download = "composite.png";
+    link.click();
   };
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
@@ -348,7 +365,6 @@ const ImageEditor = ({
               >
                 <img
                   src={defaultFaceImage}
-                   crossOrigin="anonymous"
                   style={{
                     width: "auto",
                     height: "100%",
@@ -366,7 +382,6 @@ const ImageEditor = ({
               className="top-10 absolute max-h-[350px] z-40 border-none"
               src={"/images/Layer_40_face_preview.png"}
               alt="face preview"
-               crossOrigin="anonymous"
             />
           )}
           {faceImage && (
@@ -593,8 +608,9 @@ const ImageEditor = ({
             <img
               style={{
                 filter: skinTone,
+                
               }}
-               crossOrigin="anonymous"
+              crossOrigin="anonymous"
               src={defaultHeadBackImage}
               className="h-full w-auto"
               alt="head background"
@@ -609,8 +625,9 @@ const ImageEditor = ({
             <img
               style={{
                 filter: skinTone,
+                
               }}
-  crossOrigin="anonymous"
+              crossOrigin="anonymous"
               src={defaultSkitToneImage}
               className="h-full w-auto"
               alt="skin tone"
@@ -623,7 +640,6 @@ const ImageEditor = ({
             className="absolute h-full z-50 pointer-events-none overflow-hidden"
           >
             <img
-             crossOrigin="anonymous"
               src={defualtTransparentBodyImage}
               className="h-full w-auto"
               alt="transparent overlay"
@@ -636,7 +652,6 @@ const ImageEditor = ({
             style={{ width: "557px", height: "800px" }}
           >
             <img
-             crossOrigin="anonymous"
               src={defaultBodyImage}
               className="h-full w-auto"
               alt="body layer"
