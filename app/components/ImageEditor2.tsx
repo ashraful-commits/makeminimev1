@@ -227,10 +227,10 @@ const ImageEditor = ({
         canvasHeight: 1600,
 
         style: {
-              transform: "scale(1)",
-              transformOrigin: "top left",
-              boxShadow: "none",
-              filter: "none", 
+          transform: "scale(1)",
+          transformOrigin: "top left",
+          boxShadow: "none",
+          filter: "none",
         },
       });
 
@@ -347,7 +347,9 @@ const ImageEditor = ({
         <div
           ref={containerRef}
           style={{
-            transformOrigin: "center center",
+            transformOrigin: 'center center',
+            maxWidth: '100vw',
+            willChange: 'transform',
           }}
           className="relative w-[557px] h-[800px] flex justify-center items-center top-0 max-sm:scale-50 md:scale-50 lg:scale-100 "
         >
@@ -395,7 +397,6 @@ const ImageEditor = ({
                     transformOrigin: "center",
                     zIndex: 30,
                   }}
-                  
                   className=" w-auto h-full mx-auto border-none"
                   alt=""
                 />
@@ -406,7 +407,6 @@ const ImageEditor = ({
               className="top-10 absolute max-h-[350px] z-40 border-none"
               src={"/images/Layer_40_face_preview.png"}
               alt="face preview"
-              
             />
           )}
           {faceImage && (
@@ -634,7 +634,6 @@ const ImageEditor = ({
               style={{
                 filter: skinTone,
               }}
-              
               src={defaultHeadBackImage}
               className="h-full w-auto"
               alt="head background"
@@ -650,7 +649,6 @@ const ImageEditor = ({
               style={{
                 filter: skinTone,
               }}
-              
               src={defaultSkitToneImage}
               className="h-full w-auto"
               alt="skin tone"
@@ -666,7 +664,6 @@ const ImageEditor = ({
               src={defualtTransparentBodyImage}
               className="h-full w-auto"
               alt="transparent overlay"
-              
             />
           </div>
 
@@ -679,7 +676,6 @@ const ImageEditor = ({
               src={defaultBodyImage}
               className="h-full w-auto"
               alt="body layer"
-              
             />
           </div>
         </div>
@@ -687,30 +683,30 @@ const ImageEditor = ({
 
       {/* Controls */}
       {step === 7 && (
-      <>
-        <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end max-sm:-mb-[100px] lg:right-3 md:right-3">
-          <div className="flex gap-4 mb-2 ">
-            <button
-              style={{
-                WebkitTapHighlightColor: "transparent",
-                touchAction: "manipulation",
-                WebkitAppearance: "none",
-                WebkitUserSelect: "none",
-              }}
-              onClick={() => handleAddToCart(productId, faceImage)}
-              className="bg-green-600 text-white px-6 py-3 flex justify-center items-center rounded-md text-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              {loading ? (
-                <AiOutlineLoading3Quarters className="animate-spin inline-block mr-2" />
-              ) : (
-                <FaCartPlus className="inline-block mr-2" />
-              )}
-              Add to Basket
-            </button>
+        <>
+          <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end max-sm:-mb-[100px] lg:right-3 md:right-3">
+            <div className="flex gap-4 mb-2 ">
+              <button
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  touchAction: "manipulation",
+                  WebkitAppearance: "none",
+                  WebkitUserSelect: "none",
+                }}
+                onClick={() => handleAddToCart(productId, faceImage)}
+                className="bg-green-600 text-white px-6 py-3 flex justify-center items-center rounded-md text-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                {loading ? (
+                  <AiOutlineLoading3Quarters className="animate-spin inline-block mr-2" />
+                ) : (
+                  <FaCartPlus className="inline-block mr-2" />
+                )}
+                Add to Basket
+              </button>
+            </div>
           </div>
-        </div>
-      </>
-       )}
+        </>
+      )}
     </div>
   );
 };
