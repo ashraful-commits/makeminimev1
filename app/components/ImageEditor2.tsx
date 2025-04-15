@@ -298,38 +298,29 @@ const ImageEditor = ({
     try {
       // Create PNG from the container with enhanced quality settings
       const dataUrl = await toPng(containerRef.current, {
-        cacheBust: true,
-        pixelRatio: window.devicePixelRatio || 2, // Use device pixel ratio or fallback to 2
-        quality: 1,
         width: 557,
         height: 800,
-        canvasWidth: 1114, // Double width for better quality
-        canvasHeight: 1600, // Double height for better quality
-        style: {
-          transform: 'scale(1)', // Ensure proper scaling
-          transformOrigin: 'top left',
-        },
       });
 
-      // For iOS devices, open in new tab
-      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        window.open(dataUrl, '_blank');
-        return;
-      }
+      // // For iOS devices, open in new tab
+      // if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      //   window.open(dataUrl, '_blank');
+      //   return;
+      // }
 
-      // For macOS Safari, use Blob approach
-      if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-        const blob = await fetch(dataUrl).then(res => res.blob());
-        const blobUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = 'avatar.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(blobUrl);
-        return;
-      }
+      // // For macOS Safari, use Blob approach
+      // if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+      //   const blob = await fetch(dataUrl).then(res => res.blob());
+      //   const blobUrl = window.URL.createObjectURL(blob);
+      //   const link = document.createElement('a');
+      //   link.href = blobUrl;
+      //   link.download = 'avatar.png';
+      //   document.body.appendChild(link);
+      //   link.click();
+      //   document.body.removeChild(link);
+      //   window.URL.revokeObjectURL(blobUrl);
+      //   return;
+      // }
 
       // For other devices, use direct download
       const link = document.createElement('a');
