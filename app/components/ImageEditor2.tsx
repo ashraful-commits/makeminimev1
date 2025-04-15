@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { IoMove, IoResize } from "react-icons/io5";
 import { FaArrowsRotate } from "react-icons/fa6";
 import domtoimage from "dom-to-image-more";
-
+import { toPng } from 'html-to-image';
 type HandleType = "move" | "resize" | "rotate";
 
 interface ImageEditorProps {
@@ -214,18 +214,18 @@ const ImageEditor = ({
   }, [getContainerBounds, setTransform, step]);
 
   const handleAddToCart = async () => {
-    if (!containerRef.current) return;
-
-    const compositeCanvas = await html2canvas(containerRef.current, {
-      useCORS: true,
-      backgroundColor: "transparent",
-      logging: process.env.NODE_ENV === "development",
-      scale: 2,
-    });
-    const link = document.createElement("a");
-    link.href = compositeCanvas.toDataURL("image/png");
-    link.download = "composite.png";
-    link.click();
+   toPng(containerRef.current)
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.href = dataUrl; // Set the generated data URL
+        link.download = 'download.png'; // Specify the file name
+        document.body.appendChild(link); // Append link to the body
+        link.click(); // Trigger the download
+        document.body.removeChild(link); // Clean up by removing the link
+      })
+      .catch((error) => {
+        console.error('Error generating image:', error);
+      });
   };
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
@@ -591,9 +591,7 @@ const ImageEditor = ({
             <img
               style={{
                 filter: skinTone,
-                WebkitFilter: skinTone,
               }}
-              crossOrigin="anonymous"
               src={defaultHeadBackImage}
               className="h-full w-auto"
               alt="head background"
@@ -608,9 +606,8 @@ const ImageEditor = ({
             <img
               style={{
                 filter: skinTone,
-                WebkitFilter: skinTone,
               }}
-              crossOrigin="anonymous"
+ 
               src={defaultSkitToneImage}
               className="h-full w-auto"
               alt="skin tone"
