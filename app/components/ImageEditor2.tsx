@@ -635,7 +635,7 @@ const ImageEditor = ({
       </div>
 
       {/* Controls */}
-      {step === 7 && (
+      {/* {step === 7 && ( */}
         <>
           <div className="fixed inset-x-0 bottom-3 flex justify-center z-500 sm:justify-center md:justify-end max-sm:-mb-[100px] lg:right-3 md:right-3">
             <div className="flex gap-4 mb-2 ">
@@ -653,7 +653,7 @@ const ImageEditor = ({
             </div>
           </div>
         </>
-      )}
+      {/* )} */}
     </div>
   );
 };
