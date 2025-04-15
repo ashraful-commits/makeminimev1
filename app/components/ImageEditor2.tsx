@@ -49,12 +49,12 @@ const ImageEditor = ({
 
   // Default images
   // const defaultBodyImage = bodyImage || "/images/SN-CFC-001-24-25_preview.png";
-  const defaultBodyImage = bodyImage || "/images/SN-006_preview (1).png";
-  const defualtTransparentBodyImage = "/images/transparentBody.png";
+  const defaultBodyImage = bodyImage || "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720619/qn9zliraipubz184y08v.png";
+  const defualtTransparentBodyImage = "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720473/ydzam67oi9c59cinbyyv.png";
   const defaultSkitToneImage =
-    skinToneImage || "/images/Snugzy_Shape_preview_client.png";
-  const defaultHeadBackImage = headBackImage || "/images/headblack_preview.png";
-  const defaultFaceImage = faceImage;
+    skinToneImage || "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720451/awozljxhedvlcxlaai9k.png";
+  const defaultHeadBackImage = headBackImage || "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720428/cgkj2hdm0chtbcvxn3vl.png";
+  const defaultFaceImage = faceImage ||"https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720436/bfnzceoa2zabr1inravj.png";
   const defaultSkinTone = skinTone || "grayscale(100%)";
 
   const [isDragging, setIsDragging] = useState(false);
@@ -131,7 +131,7 @@ const ImageEditor = ({
   useEffect(() => {
     drawImageOnCanvas(canvasBodyRef, defaultBodyImage);
     drawImageOnCanvas(canvasSkinToneRef, defaultSkitToneImage, defaultSkinTone);
-    // drawImageOnCanvas(canvasHeadBackRef, defaultHeadBackImage,defaultSkinTone);
+    drawImageOnCanvas(canvasHeadBackRef, defaultHeadBackImage,defaultSkinTone);
     drawImageOnCanvas(canvasTransparentRef, defualtTransparentBodyImage);
   }, [
     defaultBodyImage,
@@ -476,11 +476,11 @@ const ImageEditor = ({
           ) : (
             <img
               className="top-10 absolute max-h-[350px] z-40"
-              src={"/images/Layer_40_face_preview.png"}
+              src={defaultFaceImage}
               alt="face preview"
             />
           )}
-          {faceImage && (
+          {defaultFaceImage && (
             <div
               ref={canvasRef}
               style={{
