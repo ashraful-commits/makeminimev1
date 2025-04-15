@@ -216,21 +216,22 @@ const ImageEditor = ({
   const handleAddToCart = () => {
     const container = containerRef.current;
   
-    // Ensure the element is fully rendered and dimensions are calculated
-    const width = container.offsetWidth;
-    const height = container.offsetHeight;
-  
+    if (!container) {
+      console.error("Missing required elements for image processing");
+      return;
+    }
     domtoimage
-      .toPng(container, { width, height })
-      .then((dataUrl) => {
-        const link = document.createElement("a");
-        link.download = "downloaded-element.png";
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch((err) => {
-        console.error("Image generation failed!", err);
-      });
+    .toPng(containerRef.current, { useCORS: true })
+    .then((dataUrl) => {
+      const link = document.createElement("a");
+      link.download = "downloaded-element.png";
+      link.href = dataUrl;
+      link.click();
+    })
+    .catch((err) => {
+      console.error("Image generation failed!", err);
+    });
+  
   };
   
   // const handleAddToCart = async (id: string, faceImage: string) => {
