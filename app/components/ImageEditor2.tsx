@@ -214,18 +214,19 @@ const ImageEditor = ({
   }, [getContainerBounds, setTransform, step]);
 
   const handleAddToCart = async () => {
-    if (!containerRef.current) return;
-
-  domtoimage.toPng(containerRef.current)
-    .then(function (dataUrl) {
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = "composite.png";
-      link.click();
-    })
-    .catch(function (error) {
-      console.error("oops, something went wrong!", error);
-    });
+    if (containerRef.current) {
+      try {
+        const dataUrl = await domtoimage.toPng(containerRef.current, { bgcolor: '#ffffff' }); // Set background if needed
+        const link = document.createElement('a');
+        link.download = 'image.png';
+        link.href = dataUrl;
+        link.click();
+      } catch (error) {
+        console.error("Error generating image: ", error);
+      }
+    } else {
+      console.error("Container ref is null");
+    }
   };
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
@@ -592,7 +593,7 @@ const ImageEditor = ({
           >
             <img
               style={{
-                filter: skinTone,
+                filter: "invert(71%) sepia(51%) saturate(280%) hue-rotate(340deg) brightness(86%) contrast(88%)"
                 
               }}
               crossOrigin="anonymous"
@@ -609,7 +610,7 @@ const ImageEditor = ({
           >
             <img
               style={{
-                filter: skinTone,
+                filter: "invert(71%) sepia(51%) saturate(280%) hue-rotate(340deg) brightness(86%) contrast(88%)"
                 
               }}
               crossOrigin="anonymous"
