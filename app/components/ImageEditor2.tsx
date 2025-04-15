@@ -215,34 +215,17 @@ const ImageEditor = ({
 
   const handleAddToCart = async () => {
     if (!containerRef.current) return;
-  
-    const compositeCanvas = await html2canvas(containerRef.current, {
-      useCORS: true,
-      backgroundColor: null,
-      logging: true,
-      scale: 2,
+
+  domtoimage.toPng(containerRef.current)
+    .then(function (dataUrl) {
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "composite.png";
+      link.click();
+    })
+    .catch(function (error) {
+      console.error("oops, something went wrong!", error);
     });
-  
-    // Create a new canvas to apply filters
-    const filteredCanvas = document.createElement("canvas");
-    const ctx = filteredCanvas.getContext("2d");
-  
-    // Set filteredCanvas size same as compositeCanvas
-    filteredCanvas.width = compositeCanvas.width;
-    filteredCanvas.height = compositeCanvas.height;
-  
-    // Draw the captured image on the new canvas
-    ctx.drawImage(compositeCanvas, 0, 0);
-  
-    // Apply filters programmatically with ctx
-    // Example: Adjust brightness
-    ctx.filter = skinTone
-    ctx.drawImage(filteredCanvas, 0, 0);
-  
-    const link = document.createElement("a");
-    link.href = filteredCanvas.toDataURL("image/png");
-    link.download = "composite.png";
-    link.click();
   };
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
