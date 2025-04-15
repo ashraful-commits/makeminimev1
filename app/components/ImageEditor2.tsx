@@ -213,21 +213,9 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
-  const checkImagesLoaded = (container) => {
-    const images = container.getElementsByTagName("img");
-    return Array.from(images).every((img) => img.complete);
-  };
-  
   const handleAddToCart = () => {
-    const container = containerRef.current;
-  
-    if (!checkImagesLoaded(container)) {
-      setTimeout(() => handleAddToCart(), 100); // Retry after a small delay
-      return;
-    }
-  
     domtoimage
-      .toPng(container, { useCORS: true })
+      .toPng(containerRef.current)
       .then((dataUrl) => {
         const link = document.createElement("a");
         link.download = "downloaded-element.png";
@@ -238,8 +226,6 @@ const ImageEditor = ({
         console.error("Image generation failed!", err);
       });
   };
-  
-  
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
   //     console.error("Missing required elements for image processing");
