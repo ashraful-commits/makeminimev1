@@ -213,28 +213,32 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
+const handleAddToCart =async()=>{
+  if (!containerRef.current || !faceImage) {
+    console.error("Missing required elements for image processing");
+    return;
+  }
 
-  const handleAddToCart = async () => {
-    if (containerRef.current) {
-        try {
-            const dataUrl = await htmlToImage.toPng(containerRef.current, {
-                quality: 1.0,
-                bgcolor: '#ffffff', // Set background color if necessary
-            });
+  setLoading(true);
 
-            const link = document.createElement('a');
-            link.download = 'full-container-image.png';
-            link.href = dataUrl;
-            link.click();
-        } catch (error) {
-            console.error("Error during image generation: ", error);
-            alert("An error occurred while generating the image. Please try again.");
-        }
-    } else {
-        console.error("Container ref is null");
-        alert("Unable to capture the image. Please ensure that the content is available.");
-    }
-};
+ 
+    // iOS fix: force reflow to ensure all images are rendered before capture
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    const dataUrl = await htmlToImage.toPng(containerRef.current, {
+      cacheBust: true,
+      backgroundColor: "transparent",
+      pixelRatio: 2,
+      style: {
+        transform: "scale(1)", // you can adjust scale if image is blurry
+      },
+    });
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = 'image.png';
+    link.click();
+}
+
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
   //     console.error("Missing required elements for image processing");
@@ -251,7 +255,7 @@ const ImageEditor = ({
   //       logging: process.env.NODE_ENV === "development",
   //       scale: 2,
   //     });
-
+  //    console.log(containerRef.current)
   //     //uuid
   //     const uuidgen = uuidv4();
   //     // Prepare upload promises
