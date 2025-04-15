@@ -217,23 +217,29 @@ const ImageEditor = ({
   const handleAddToCart = async () => {
     if (containerRef.current) {
         try {
-            // Capture the content of the ref'd container as an image
-            const dataUrl = await htmlToImage.toPng(containerRef.current, {
-                quality: 1.0, // Adjust quality for PNG
-            });
 
-            // Create a link element for downloading the image
+            // Convert the container to a Blob image
+            const blob = await htmlToImage.toBlob(containerRef.current);
+  
+            // Create a URL for the Blob
+            const url = window.URL.createObjectURL(blob);
+    
+            // Create and click the download link
             const link = document.createElement('a');
-            link.download = 'captured-image.png'; // Set the filename
-            link.href = dataUrl; // Set the data URL
+            link.href = url;
+            link.download = 'full-container-image-' + Date.now() + '.png'; // Use the random number for the filename
             link.click(); // Trigger the download
+            window.URL.revokeObjectURL(url); // Release the Blob URL 
+            return "success"; // Indicate success
         } catch (error) {
             console.error("Error during image generation: ", error);
             alert("An error occurred while generating the image. Please try again.");
+            return "failure"; // Indicate failure
         }
     } else {
         console.error("Container ref is null");
         alert("Unable to capture the image. Please ensure that the content is available.");
+        return "failure"; // Indicate failure
     }
 };
   // const handleAddToCart = async (id: string, faceImage: string) => {
