@@ -217,10 +217,11 @@ const ImageEditor = ({
   const handleAddToCart = async () => {
     if (containerRef.current) {
         try {
-
+          containerRef.current.style.display = 'none';
+          containerRef.current.offsetHeight; // Trigger reflow
+          containerRef.current.style.display = 'block';
             // Convert the container to a Blob image
             const blob = await htmlToImage.toBlob(containerRef.current);
-  
             // Create a URL for the Blob
             const url = window.URL.createObjectURL(blob);
     
