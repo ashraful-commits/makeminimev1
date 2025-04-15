@@ -355,6 +355,7 @@ const ImageEditor = ({
                     transformOrigin: "center",
                     zIndex: 30,
                   }}
+                  crossOrigin="anonymous"
                   className=" w-auto h-full mx-auto border-none"
                   alt=""
                 />
@@ -365,6 +366,7 @@ const ImageEditor = ({
               className="top-10 absolute max-h-[350px] z-40 border-none"
               src={"/images/Layer_40_face_preview.png"}
               alt="face preview"
+              crossOrigin="anonymous"
             />
           )}
           {faceImage && (
@@ -626,6 +628,7 @@ const ImageEditor = ({
               src={defualtTransparentBodyImage}
               className="h-full w-auto"
               alt="transparent overlay"
+              crossOrigin="anonymous"
             />
           </div>
 
@@ -638,6 +641,7 @@ const ImageEditor = ({
               src={defaultBodyImage}
               className="h-full w-auto"
               alt="body layer"
+              crossOrigin="anonymous"
             />
           </div>
         </div>
