@@ -232,24 +232,24 @@ const ImageEditor = ({
       });
 
       // // For iOS devices, open in new tab
-      // if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      //   window.open(dataUrl, "_blank");
-      //   return;
-      // }
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        window.open(dataUrl, "_blank");
+        return;
+      }
 
-      // // For macOS Safari, use Blob approach
-      // if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      //   const blob = await fetch(dataUrl).then((res) => res.blob());
-      //   const blobUrl = window.URL.createObjectURL(blob);
-      //   const link = document.createElement("a");
-      //   link.href = blobUrl;
-      //   link.download = "avatar.png";
-      //   document.body.appendChild(link);
-      //   link.click();
-      //   document.body.removeChild(link);
-      //   window.URL.revokeObjectURL(blobUrl);
-      //   return;
-      // }
+      // For macOS Safari, use Blob approach
+      if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+        const blob = await fetch(dataUrl).then((res) => res.blob());
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = "avatar.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+        return;
+      }
 
       // For other devices, use direct download
       const link = document.createElement("a");
