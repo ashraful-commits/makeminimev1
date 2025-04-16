@@ -320,33 +320,26 @@ const ImageEditor = ({
     if (!containerRef.current) return;
 
     try {
+      setLoading(true);
       const dataUrl = await toPng(containerRef.current, {
         width: 557,
         height: 800,
         cacheBust: true,
-        skipFonts: true,
-        style: {
-          transform: "none", // Reset any CSS transforms
-          overflow: "visible",
-        },
       });
 
-      // Safari-specific download handling
-      if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-        const link = document.createElement("a");
-        link.download = "facepillow.png";
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        const link = document.createElement("a");
-        link.download = "facepillow.png";
-        link.href = dataUrl;
-        link.click();
-      }
+      const blob = await fetch(dataUrl).then((res) => res.blob());
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "facepillow.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Error downloading image:", err);
+    } finally {
+      setLoading(false);
     }
   };
   // const handleAddToCart = async (id: string, faceImage: string) => {
