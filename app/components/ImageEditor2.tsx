@@ -5,7 +5,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { v4 as uuidv4 } from "uuid";
 import { IoMove, IoResize } from "react-icons/io5";
 import { FaArrowsRotate } from "react-icons/fa6";
-import { toPng } from 'html-to-image';
+import { toPng } from "html-to-image";
 type HandleType = "move" | "resize" | "rotate";
 
 interface ImageEditorProps {
@@ -49,33 +49,40 @@ const ImageEditor = ({
 
   // Default images
   // const defaultBodyImage = bodyImage || "/images/SN-CFC-001-24-25_preview.png";
-  const defaultBodyImage = bodyImage || "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720619/qn9zliraipubz184y08v.png";
-  const defualtTransparentBodyImage = "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720473/ydzam67oi9c59cinbyyv.png";
+  const defaultBodyImage =
+    bodyImage ||
+    "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720619/qn9zliraipubz184y08v.png";
+  const defualtTransparentBodyImage =
+    "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720473/ydzam67oi9c59cinbyyv.png";
   const defaultSkitToneImage =
-    skinToneImage || "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720451/awozljxhedvlcxlaai9k.png";
-  const defaultHeadBackImage = headBackImage || "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720428/cgkj2hdm0chtbcvxn3vl.png";
-  const defaultFaceImage = faceImage ||"https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720436/bfnzceoa2zabr1inravj.png";
+    skinToneImage ||
+    "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720451/awozljxhedvlcxlaai9k.png";
+  const defaultHeadBackImage =
+    headBackImage ||
+    "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720428/cgkj2hdm0chtbcvxn3vl.png";
+  const defaultFaceImage =
+    faceImage ||
+    "https://res.cloudinary.com/ds9mljkgj/image/upload/v1744720436/bfnzceoa2zabr1inravj.png";
   const defaultSkinTone = skinTone || "grayscale(100%)";
 
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  
   const isCanvasFilterSupported = (() => {
     try {
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = 1;
       canvas.height = 1;
-      const ctx = canvas.getContext('2d');
-      
+      const ctx = canvas.getContext("2d");
+
       // Draw a red pixel
-      ctx.fillStyle = '#FF0000';
+      ctx.fillStyle = "#FF0000";
       ctx.fillRect(0, 0, 1, 1);
-      
+
       // Apply brightness filter to make it black
-      ctx.filter = 'brightness(0)';
+      ctx.filter = "brightness(0)";
       ctx.fillRect(0, 0, 1, 1);
-      
+
       // Check the pixel color
       const pixel = ctx.getImageData(0, 0, 1, 1).data;
       return pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0; // Check if black
@@ -83,61 +90,78 @@ const ImageEditor = ({
       return false;
     }
   })();
-  
+
   console.log(isCanvasFilterSupported ? "true" : "false");
-  
+
   const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-  
+
+    // Set proper canvas dimensions
+    canvas.width = 557;
+    canvas.height = 800;
+
     const ctx = canvas.getContext("2d");
     const image = new Image();
     image.crossOrigin = "anonymous";
     image.src = imageSrc;
-  
-    image.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-      // Apply filter using supported method
-      if (isCanvasFilterSupported) {
-        ctx.filter = filter;
-        canvas.style.filter = "none"; 
-      } else {
-        ctx.filter = "none"; 
-        canvas.style.filter = filter; 
-      }
-  
-      const width = canvas.width;
-      const height = canvas.height;
-      const targetAspect = width / height;
-      const imgAspect = image.naturalWidth / image.naturalHeight;
-  
-      let drawWidth, drawHeight;
-  
-      if (imgAspect > targetAspect) {
-        drawHeight = height;
-        drawWidth = height * imgAspect;
-      } else {
-        drawWidth = width;
-        drawHeight = width / imgAspect;
-      }
-  
-      const offsetX = (width - drawWidth) / 2;
-      const offsetY = (height - drawHeight) / 2;
-  
-      ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-    };
+
+    return new Promise((resolve) => {
+      image.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Apply filters
+        if (isCanvasFilterSupported) {
+          ctx.filter = filter;
+        } else {
+          canvas.style.filter = filter;
+        }
+
+        // Maintain aspect ratio
+        const imgAspect = image.naturalWidth / image.naturalHeight;
+        const targetAspect = canvas.width / canvas.height;
+
+        let drawWidth, drawHeight;
+        if (imgAspect > targetAspect) {
+          drawHeight = canvas.height;
+          drawWidth = drawHeight * imgAspect;
+        } else {
+          drawWidth = canvas.width;
+          drawHeight = drawWidth / imgAspect;
+        }
+
+        const offsetX = (canvas.width - drawWidth) / 2;
+        const offsetY = (canvas.height - drawHeight) / 2;
+
+        ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+        resolve(true);
+      };
+    });
   };
   useEffect(() => {
-    drawImageOnCanvas(canvasBodyRef, defaultBodyImage);
-    drawImageOnCanvas(canvasSkinToneRef, defaultSkitToneImage, defaultSkinTone);
-    drawImageOnCanvas(canvasHeadBackRef, defaultHeadBackImage,defaultSkinTone);
-    drawImageOnCanvas(canvasTransparentRef, defualtTransparentBodyImage);
+    const loadImages = async () => {
+      await Promise.all([
+        drawImageOnCanvas(canvasBodyRef, defaultBodyImage),
+        drawImageOnCanvas(
+          canvasSkinToneRef,
+          defaultSkitToneImage,
+          defaultSkinTone
+        ),
+        drawImageOnCanvas(
+          canvasHeadBackRef,
+          defaultHeadBackImage,
+          defaultSkinTone
+        ),
+        drawImageOnCanvas(canvasTransparentRef, defualtTransparentBodyImage),
+      ]);
+    };
+
+    loadImages();
   }, [
     defaultBodyImage,
     defaultSkitToneImage,
-    defaultSkinTone,
     defaultHeadBackImage,
+    defaultSkinTone,
   ]);
 
   const [activeHandle, setActiveHandle] = useState<HandleType | null>(null);
@@ -292,46 +316,39 @@ const ImageEditor = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [getContainerBounds, setTransform, step]);
 
-  const handleAddToCart=async()=>{
+  const handleAddToCart = async () => {
     if (!containerRef.current) return;
 
     try {
-      // Create PNG from the container with enhanced quality settings
       const dataUrl = await toPng(containerRef.current, {
         width: 557,
         height: 800,
+        cacheBust: true,
+        skipFonts: true,
+        style: {
+          transform: "none", // Reset any CSS transforms
+          overflow: "visible",
+        },
       });
 
-      // // For iOS devices, open in new tab
-      // if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      //   window.open(dataUrl, '_blank');
-      //   return;
-      // }
-
-      // // For macOS Safari, use Blob approach
-      // if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      //   const blob = await fetch(dataUrl).then(res => res.blob());
-      //   const blobUrl = window.URL.createObjectURL(blob);
-      //   const link = document.createElement('a');
-      //   link.href = blobUrl;
-      //   link.download = 'avatar.png';
-      //   document.body.appendChild(link);
-      //   link.click();
-      //   document.body.removeChild(link);
-      //   window.URL.revokeObjectURL(blobUrl);
-      //   return;
-      // }
-
-      // For other devices, use direct download
-      const link = document.createElement('a');
-      link.download = 'facepillow.png';
-      link.href = dataUrl;
-      link.click();
+      // Safari-specific download handling
+      if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+        const link = document.createElement("a");
+        link.download = "facepillow.png";
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        const link = document.createElement("a");
+        link.download = "facepillow.png";
+        link.href = dataUrl;
+        link.click();
+      }
     } catch (err) {
-      console.error('Error downloading image:', err);
+      console.error("Error downloading image:", err);
     }
-
-  }
+  };
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
   //     console.error("Missing required elements for image processing");
@@ -419,8 +436,8 @@ const ImageEditor = ({
           {/* Background Layers */}
           <canvas
             ref={canvasHeadBackRef}
-            width={"557px"}
-            height={"800px"}
+            width={557}
+            height={800}
             className="absolute z-10 h-full"
           />
 
@@ -698,21 +715,21 @@ const ImageEditor = ({
           {/* Other Layers */}
           <canvas
             ref={canvasSkinToneRef}
-            width={"557px"}
-            height={"800px"}
+            width={557}
+            height={800}
             className="absolute z-1 h-full "
           />
           <canvas
             style={{ zIndex: 50 }}
             ref={canvasTransparentRef}
-            width={"557px"}
-            height={"800px"}
+            width={557}
+            height={800}
             className="absolute  h-full z-50 pointer-events-none overflow-hidden"
           />
           <canvas
             ref={canvasBodyRef}
-            width={"557px"}
-            height={"800px"}
+            width={557}
+            height={800}
             className=" absolute z-20 top-[0.20rem] h-full "
           />
         </div>
