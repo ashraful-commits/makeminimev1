@@ -161,7 +161,7 @@ const ImageEditor = ({
     defaultBodyImage,
     defaultSkitToneImage,
     defaultHeadBackImage,
-    defaultSkinTone,
+    defaultSkinTone,step
   ]);
 
   const [activeHandle, setActiveHandle] = useState<HandleType | null>(null);
@@ -314,34 +314,39 @@ const ImageEditor = ({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [getContainerBounds, setTransform, step]);
+  }, [getContainerBounds, setTransform]);
 
-  const handleAddToCart = async () => {
+
+
+const handleAddToCart = async () => {
     if (!containerRef.current) return;
-
+    await Promise.all([
+      drawImageOnCanvas(canvasBodyRef, defaultBodyImage),
+      drawImageOnCanvas(canvasSkinToneRef, defaultSkitToneImage, defaultSkinTone),
+      drawImageOnCanvas(canvasHeadBackRef, defaultHeadBackImage, defaultSkinTone),
+      drawImageOnCanvas(canvasTransparentRef, defualtTransparentBodyImage),
+  ]);
     try {
-      setLoading(true);
-      const dataUrl = await toPng(containerRef.current, {
-        width: 557,
-        height: 800,
-        cacheBust: true,
-      });
+        const dataUrl = await toPng(containerRef.current, {
+            width: 557,
+            height: 800,
+            cacheBust: true,
+            skipFonts: true,
+        });
 
-      const blob = await fetch(dataUrl).then((res) => res.blob());
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "facepillow.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Error downloading image:", err);
-    } finally {
-      setLoading(false);
+        const blob = await fetch(dataUrl).then(res => res.blob());
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'facepillow.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error("Error downloading image:", error);
     }
-  };
+};
   // const handleAddToCart = async (id: string, faceImage: string) => {
   //   if (!containerRef.current || !faceImage) {
   //     console.error("Missing required elements for image processing");
