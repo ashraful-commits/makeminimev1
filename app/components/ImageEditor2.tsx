@@ -93,7 +93,7 @@ const ImageEditor = ({
 
   console.log(isCanvasFilterSupported ? "true" : "false");
 
-  const drawImageOnCanvas = (canvasRef, imageSrc, filter = "none") => {
+  const drawImageOnCanvas = useCallback((canvasRef, imageSrc, filter = "none") => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -137,7 +137,9 @@ const ImageEditor = ({
         resolve(true);
       };
     });
-  };
+  },[isCanvasFilterSupported]);
+
+
   useEffect(() => {
     const loadImages = async () => {
       await Promise.all([
@@ -161,7 +163,7 @@ const ImageEditor = ({
     defaultBodyImage,
     defaultSkitToneImage,
     defaultHeadBackImage,
-    defaultSkinTone,step
+    defaultSkinTone,drawImageOnCanvas
   ]);
 
   const [activeHandle, setActiveHandle] = useState<HandleType | null>(null);
